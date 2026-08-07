@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Running Proteomics Searches on Hive — Student Handout 2</title>
+<style>
+  :root{
+    --ink:#1c1a17; --muted:#6b655c; --line:#e7e2d9; --bg:#faf8f4;
+    --accent:#b5541f; --card:#ffffff; --code-bg:#2b2722; --code-ink:#f3ede2;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:760px;margin:0 auto;padding:48px 24px 72px}
+  header{border-bottom:2px solid var(--ink);padding-bottom:20px;margin-bottom:8px}
+  h1{font-size:1.9rem;margin:0 0 6px;letter-spacing:-.01em}
+  .sub{color:var(--muted);font-size:1.02rem;margin:0}
+  h2{font-size:1.18rem;margin:38px 0 6px;display:flex;align-items:baseline;gap:12px}
+  h3{font-size:1rem;margin:22px 0 4px}
+  .num{display:inline-flex;align-items:center;justify-content:center;min-width:30px;height:30px;
+    background:var(--accent);color:#fff;border-radius:50%;font-size:.95rem;font-weight:700;flex:none;transform:translateY(3px)}
+  p{margin:.5rem 0}
+  code.inline{background:#efeae1;padding:1px 6px;border-radius:5px;font-size:.9em;
+    font-family:"SF Mono",Menlo,Consolas,monospace}
+  pre{background:var(--code-bg);color:var(--code-ink);padding:14px 16px;border-radius:10px;overflow-x:auto;
+    font-family:"SF Mono",Menlo,Consolas,monospace;font-size:.88rem;line-height:1.5;margin:.6rem 0}
+  pre .cmt{color:#9a927f}
+  .os{margin:.4rem 0 .2rem;font-weight:600;font-size:.82rem;letter-spacing:.06em;text-transform:uppercase;color:var(--accent)}
+  .callout{background:#fdf6ee;border:1px solid #f0e2cf;border-left:4px solid var(--accent);
+    border-radius:8px;padding:14px 18px;margin:18px 0}
+  .callout.warn{background:#fef4f1;border-color:#f4d6cc;border-left-color:#c0392b}
+  .callout.ok{background:#f2f7f1;border-color:#d8e6d4;border-left-color:#4a7c3f}
+  .callout strong{color:var(--ink)}
+  .step{margin-left:42px}
+  ul{margin:.4rem 0;padding-left:1.2rem}
+  li{margin:.25rem 0}
+  table{border-collapse:collapse;width:100%;margin:.7rem 0;font-size:.92rem}
+  th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+  th{background:#f2ede4;font-weight:600}
+  .tablewrap{overflow-x:auto}
+  footer{margin-top:48px;padding-top:18px;border-top:1px solid var(--line);color:var(--muted);font-size:.85rem}
+  a{color:var(--accent)}
+  .kbd{font-size:.82rem;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Running Proteomics Searches on Hive</h1>
+    <p class="sub">Student handout 2 — use Claude Code on the cluster to search real mass-spec data.</p>
+  </header>
+
+  <div class="callout">
+    <strong>Do handout 1 first.</strong> This picks up where <em>Getting Started with Claude Code</em>
+    left off. You should already have Claude Code installed and the course API key working.
+    <br><br>
+    <strong>What you need from your instructor:</strong> your personal Hive login — a username like
+    <code class="inline">proteomics-class-07</code> and its password. Each of you gets your own;
+    please don't share or swap them.
+  </div>
+
+  <h2><span class="num">1</span> Log in to Hive</h2>
+  <div class="step">
+    <p>Open a terminal (macOS/Linux) or PowerShell (Windows) and connect, using <em>your</em> account number:</p>
+    <pre>ssh proteomics-class-07@hive.hpc.ucdavis.edu</pre>
+    <p>Type the password when prompted. Nothing appears as you type — that's normal, just press Enter.
+      The first connection asks you to confirm the host fingerprint; type <code class="inline">yes</code>.</p>
+    <p>You'll land in your own home directory, <code class="inline">/home/proteomics-class-07</code>.</p>
+  </div>
+
+  <h2><span class="num">2</span> Start Claude Code on Hive</h2>
+  <div class="step">
+    <p>Go to the shared course folder your instructor points you at and run the launcher. The first run
+      installs Claude Code into your home directory (about a minute, no admin needed):</p>
+    <pre>bash start-claude-code.sh</pre>
+    <p>Then run the <strong>same command again</strong> to actually start it. After the first install you can
+      also just type <code class="inline">claude</code> from anywhere.</p>
+    <p class="kbd">Hive has outbound internet, so Claude Code can reach the API from the cluster — this is
+      already tested and working on the class accounts.</p>
+  </div>
+
+  <h2><span class="num">3</span> Install the proteomics pipeline skill</h2>
+  <div class="step">
+    <p>This is the part that turns Claude Code into a proteomics analyst. The skill knows the
+      validated UC&nbsp;Davis Proteomics Core workflows — which search engine to use, the right mass
+      tolerances for each instrument, and how to run everything correctly on the cluster.</p>
+    <p>Inside a Claude Code session, type these two commands:</p>
+    <pre>/plugin marketplace add bsphinney/DE-LIMP
+/plugin install ucdavis-proteomics-core-pipeline</pre>
+    <p>You only do this once per machine. Confirm it's there with:</p>
+    <pre>/plugin</pre>
+
+    <h3>On Claude Desktop instead?</h3>
+    <p>Go to <strong>Customize → Plugins → Browse plugins</strong>, add the marketplace
+      <code class="inline">bsphinney/DE-LIMP</code>, then install
+      <code class="inline">ucdavis-proteomics-core-pipeline</code> the same way.</p>
+  </div>
+
+  <h2><span class="num">4</span> Find the course data</h2>
+  <div class="step">
+    <p>The class datasets live on the group share, which your account can already read:</p>
+    <pre>/quobyte/proteomics-grp/2026_shortcourse_data/</pre>
+    <p>Have a look around:</p>
+    <pre>ls /quobyte/proteomics-grp/2026_shortcourse_data/raw_data/</pre>
+    <p>There are also HeLa quality-control runs from the Core's timsTOF you can practise on:</p>
+    <pre>ls /quobyte/proteomics-grp/hela_qcs/timstofHT/dia/</pre>
+    <div class="callout">
+      <strong>Read-only, please.</strong> The group share holds other people's real data. Read from it,
+      but always write your results into <em>your own home directory</em>. The examples below all do this.
+    </div>
+  </div>
+
+  <h2><span class="num">5</span> Run your first search</h2>
+  <div class="step">
+    <p>Start Claude Code from your home directory and just ask in plain language. For example:</p>
+    <pre>Search this timsTOF DIA file with DIA-NN and tell me how many
+proteins were identified. Put all the results in my home directory.
+
+/quobyte/proteomics-grp/hela_qcs/timstofHT/dia/06Aug2025_HeLa50ng_DIA_100spd_S1-A2_1_15663.d</pre>
+    <p>The skill will work out that this is DIA data from a timsTOF, pick the matching validated workflow,
+      pull the right human FASTA, write a cluster job script, submit it, and watch it until it finishes.
+      It will ask you to confirm before it commits any real compute — read that summary before saying yes.</p>
+    <p>When you have several files and a real experimental design, the same skill takes you all the way to
+      differentially expressed proteins. Tell it which samples are which:</p>
+    <pre>The first three files are control and the last three are treated.
+Run the full DIA analysis and give me the differential expression results.</pre>
+  </div>
+
+  <h2><span class="num">6</span> The cluster rules — this part matters</h2>
+  <div class="step">
+    <div class="callout warn">
+      <strong>Never run a search directly in your terminal on Hive.</strong> When you log in you're on a
+      <em>login node</em>, which is shared by hundreds of people. Real searches must be submitted as
+      <em>jobs</em> with <code class="inline">sbatch</code>, which sends them off to the compute nodes.
+      Running a heavy job on the login node will get it killed and your account flagged. The skill handles
+      this for you — but if you ever write your own script, submit it.
+    </div>
+
+    <p>Your class accounts run under the Slurm account <code class="inline">publicgrp</code>, and there are
+      two partitions you can use. The difference matters:</p>
+
+    <div class="tablewrap">
+    <table>
+      <tr><th></th><th><code class="inline">low</code> — use this by default</th><th><code class="inline">high</code></th></tr>
+      <tr><th>CPUs per job</th><td>No limit</td><td><strong>8 maximum</strong></td></tr>
+      <tr><th>Memory per job</th><td>No limit</td><td><strong>128 GB maximum</strong></td></tr>
+      <tr><th>Max wall time</th><td>7 days</td><td>30 days</td></tr>
+      <tr><th>Catch</th><td>Can be interrupted and automatically restarted if a paying group needs the node</td><td>Never interrupted, but the whole class shares a small pool</td></tr>
+    </table>
+    </div>
+
+    <p><strong>Use <code class="inline">low</code>.</strong> The 8-CPU ceiling on <code class="inline">high</code>
+      makes searches slow, and that pool is shared with roughly a thousand other campus users. On
+      <code class="inline">low</code> you can ask for 32 CPUs and your search finishes in minutes. Add
+      <code class="inline">--requeue</code> so it restarts itself on the rare occasion it gets bumped.</p>
+
+    <p>If you write your own job script, the header should look like this:</p>
+    <pre><span class="cmt">#!/bin/bash -l</span>
+#SBATCH --job-name=my_search
+#SBATCH --partition=low
+#SBATCH --account=publicgrp
+#SBATCH --cpus-per-task=32
+#SBATCH --mem=64G
+#SBATCH --time=08:00:00
+#SBATCH --requeue
+#SBATCH -o my_search.%j.out
+#SBATCH -e my_search.%j.err</pre>
+    <p class="kbd">64 GB is generous — a single-file DIA-NN search of a human sample actually peaks around
+      11 GB. Don't request hundreds of gigabytes you won't use; it just makes you wait longer in the queue.</p>
+  </div>
+
+  <h2><span class="num">7</span> Watch your job</h2>
+  <div class="step">
+    <p>Submitting prints a job number. Use it to check on things:</p>
+    <pre><span class="cmt"># is it queued (PD) or running (R)?</span>
+squeue -u $USER
+
+<span class="cmt"># what happened to a finished job?</span>
+sacct -j 19457532 --format=JobID,State,Elapsed,MaxRSS
+
+<span class="cmt"># watch the output as it's written</span>
+tail -f my_search.19457532.out</pre>
+    <p>Press <code class="inline">Ctrl-C</code> to stop watching (this does <em>not</em> kill the job).
+      To actually cancel a job: <code class="inline">scancel 19457532</code>.</p>
+    <p>You can log out and your job keeps running — come back later and check on it.</p>
+  </div>
+
+  <h2><span class="num">8</span> What a good result looks like</h2>
+  <div class="step">
+    <p>Here's a real run on the class accounts, so you know what to expect. One HeLa 50 ng DIA file from
+      the timsTOF HT, 100 samples-per-day gradient, searched library-free against the human proteome:</p>
+    <div class="tablewrap">
+    <table>
+      <tr><th>Run time</th><td>6 minutes 23 seconds on 32 CPUs</td></tr>
+      <tr><th>Peak memory</th><td>11 GB</td></tr>
+      <tr><th>Precursors identified</th><td>35,952 at 1% FDR</td></tr>
+      <tr><th>Protein groups</th><td>4,466 at 1% FDR</td></tr>
+    </table>
+    </div>
+    <p>Your main results file is <code class="inline">report.parquet</code>. Alongside it you'll get
+      <code class="inline">report.pg_matrix.tsv</code> (protein groups × samples — the table most people
+      actually want), <code class="inline">report.stats.tsv</code> (a QC summary), and
+      <code class="inline">report.log.txt</code>. Ask Claude Code to explain any of them.</p>
+    <div class="callout ok">
+      <strong>Sanity check your own runs.</strong> If a short-gradient HeLa run gives you a few hundred
+      proteins instead of a few thousand, something went wrong — wrong FASTA, wrong instrument settings, or a
+      bad file. Ask Claude Code to look at <code class="inline">report.log.txt</code> and the QC stats with you.
+      Getting a number is easy; knowing whether to believe it is the actual skill.
+    </div>
+  </div>
+
+  <div class="callout warn">
+    <strong>Two shared budgets, both easy to blow through.</strong>
+    <ul>
+      <li><strong>The API key ($500 for the whole class).</strong> Stay on the default Sonnet model —
+        check with <code class="inline">/model</code>. Have Claude Code read result files from disk rather
+        than pasting big protein tables into the chat. <code class="inline">/exit</code> when you're done.</li>
+      <li><strong>The cluster.</strong> Don't submit twenty jobs to see what sticks, and don't request
+        hundreds of CPUs or gigabytes you won't use. One well-specified job beats ten speculative ones.</li>
+    </ul>
+    If Claude Code starts returning billing or limit errors, tell your instructor — the class may have hit the cap.
+  </div>
+
+  <footer>
+    Hive user guide: <a href="https://hpc.ucdavis.edu/">hpc.ucdavis.edu</a> ·
+    Claude Code docs: <a href="https://code.claude.com/docs/en/quickstart">code.claude.com/docs</a> ·
+    Pipeline skill: <a href="https://github.com/bsphinney/DE-LIMP">github.com/bsphinney/DE-LIMP</a>
+    <br>UC Davis Proteomics Core — Short Course 2026
+  </footer>
+</div>
+</body>
+</html>

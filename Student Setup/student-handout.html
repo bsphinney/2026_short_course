@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Code — Student Setup Handout</title>
+<style>
+  :root{
+    --ink:#1c1a17; --muted:#6b655c; --line:#e7e2d9; --bg:#faf8f4;
+    --accent:#b5541f; --card:#ffffff; --code-bg:#2b2722; --code-ink:#f3ede2;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:760px;margin:0 auto;padding:48px 24px 72px}
+  header{border-bottom:2px solid var(--ink);padding-bottom:20px;margin-bottom:8px}
+  h1{font-size:1.9rem;margin:0 0 6px;letter-spacing:-.01em}
+  .sub{color:var(--muted);font-size:1.02rem;margin:0}
+  h2{font-size:1.18rem;margin:38px 0 6px;display:flex;align-items:baseline;gap:12px}
+  .num{display:inline-flex;align-items:center;justify-content:center;min-width:30px;height:30px;
+    background:var(--accent);color:#fff;border-radius:50%;font-size:.95rem;font-weight:700;flex:none;transform:translateY(3px)}
+  p{margin:.5rem 0}
+  code.inline{background:#efeae1;padding:1px 6px;border-radius:5px;font-size:.9em;
+    font-family:"SF Mono",Menlo,Consolas,monospace}
+  pre{background:var(--code-bg);color:var(--code-ink);padding:14px 16px;border-radius:10px;overflow-x:auto;
+    font-family:"SF Mono",Menlo,Consolas,monospace;font-size:.88rem;line-height:1.5;margin:.6rem 0}
+  pre .cmt{color:#9a927f}
+  .os{margin:.4rem 0 .2rem;font-weight:600;font-size:.82rem;letter-spacing:.06em;text-transform:uppercase;color:var(--accent)}
+  .callout{background:#fdf6ee;border:1px solid #f0e2cf;border-left:4px solid var(--accent);
+    border-radius:8px;padding:14px 18px;margin:18px 0}
+  .callout.warn{background:#fef4f1;border-color:#f4d6cc;border-left-color:#c0392b}
+  .callout strong{color:var(--ink)}
+  .step{margin-left:42px}
+  ul{margin:.4rem 0;padding-left:1.2rem}
+  li{margin:.25rem 0}
+  footer{margin-top:48px;padding-top:18px;border-top:1px solid var(--line);color:var(--muted);font-size:.85rem}
+  a{color:var(--accent)}
+  .kbd{font-size:.82rem;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Getting Started with Claude Code</h1>
+    <p class="sub">Student setup handout — install the tool and connect it with the class key.</p>
+  </header>
+
+  <div class="callout">
+    <strong>What you need from your instructor:</strong> the <em>course API key</em> — a long string that
+    starts with <code class="inline">sk-ant-…</code>. Everyone in the course uses this same key.
+    Treat it like a password: don't post it publicly, don't commit it to a public GitHub repo.
+  </div>
+
+  <h2><span class="num">1</span> Install Claude Code</h2>
+  <div class="step">
+    <p>Open a terminal and run the command for your operating system.</p>
+
+    <p class="os">macOS / Linux</p>
+    <pre>curl -fsSL https://claude.ai/install.sh | bash</pre>
+
+    <p class="os">Windows — PowerShell</p>
+    <pre>irm https://claude.ai/install.ps1 | iex</pre>
+
+    <p class="kbd">On Windows, PowerShell is recommended. Installing <a href="https://git-scm.com/downloads/win">Git for Windows</a> is optional but gives Claude Code a better shell.</p>
+
+    <p>Confirm it worked — this should print a version number:</p>
+    <pre>claude --version</pre>
+  </div>
+
+  <h2><span class="num">2</span> Add the class API key</h2>
+  <div class="step">
+    <p>Set the key as an environment variable named <code class="inline">ANTHROPIC_API_KEY</code>. Replace
+      <code class="inline">sk-ant-YOUR-CLASS-KEY</code> with the exact key your instructor gave you.</p>
+
+    <p class="os">macOS / Linux</p>
+    <pre><span class="cmt"># adds the key to your shell so Claude Code finds it</span>
+echo 'export ANTHROPIC_API_KEY=sk-ant-YOUR-CLASS-KEY' &gt;&gt; ~/.zshrc
+source ~/.zshrc</pre>
+    <p class="kbd">Using bash instead of zsh? Replace <code class="inline">~/.zshrc</code> with <code class="inline">~/.bashrc</code>.</p>
+
+    <p class="os">Windows — PowerShell</p>
+    <pre>setx ANTHROPIC_API_KEY "sk-ant-YOUR-CLASS-KEY"</pre>
+    <p class="kbd">After <code class="inline">setx</code>, close and reopen your terminal so the new variable loads.</p>
+  </div>
+
+  <h2><span class="num">3</span> Start Claude Code</h2>
+  <div class="step">
+    <p>Move into a project folder and launch it:</p>
+    <pre><span class="cmt"># go to whatever folder you're working in</span>
+cd my-project
+claude</pre>
+    <p>Claude Code opens an interactive session. The first time, it detects the key and asks you to
+      <strong>approve</strong> it — say yes. You're connected.</p>
+  </div>
+
+  <h2><span class="num">4</span> Try your first prompts</h2>
+  <div class="step">
+    <p>Just type what you want in plain language. A few to get going:</p>
+    <ul>
+      <li><em>"Explain what this project does."</em></li>
+      <li><em>"Write a Python function that … and add a test for it."</em></li>
+      <li><em>"Find the bug that's causing … and fix it."</em></li>
+    </ul>
+    <p>Useful in-session commands: <code class="inline">/help</code> lists everything,
+      <code class="inline">/model</code> switches the model, and <code class="inline">/exit</code> ends the session.</p>
+  </div>
+
+  <div class="callout warn">
+    <strong>This is a shared course budget ($500 for the whole class).</strong> That's plenty for everyone
+    when it's used sensibly — but it's shared, so please:
+    <ul>
+      <li>Stay on the default (mid-tier) model unless an assignment says otherwise — switch with <code class="inline">/model</code>. It's much cheaper and fine for proteomics data-analysis work.</li>
+      <li>Have Claude Code <em>read your data files from disk</em> rather than pasting big tables into the chat — huge protein/peptide files eat budget fast.</li>
+      <li>Don't leave a session running or loop it on giant tasks, and <code class="inline">/exit</code> when you're done.</li>
+    </ul>
+    If Claude Code stops responding with a billing/limit error, the class may have reached the shared $500 cap — let your instructor know.
+  </div>
+
+  <footer>
+    Docs: <a href="https://code.claude.com/docs/en/quickstart">code.claude.com/docs</a> ·
+    Trouble installing? <a href="https://code.claude.com/docs/en/troubleshoot-install">Installation troubleshooting</a>
+  </footer>
+</div>
+</body>
+</html>

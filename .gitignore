@@ -1,0 +1,37 @@
+# =============================================================================
+# Nothing in this file may ever be committed. Read before you add an exception.
+# =============================================================================
+
+# --- Live credentials --------------------------------------------------------
+# The slips and Get-My-Results.ps1 embed every class account password in plain
+# text. final_handouts.zip is listed separately because it CONTAINS copies of
+# both — excluding the folder alone would not have caught it.
+final_handouts/2-hand-out-privately/
+final_handouts.zip
+Student Setup/student-slips/
+Student Setup/student-slips.pdf
+Get-My-Results.ps1
+student-slips.pdf
+
+# The course API key. The committed copy is only the placeholder
+# "PASTE-YOUR-COURSE-KEY-HERE", and it stays uncommitted so that a locally
+# filled-in copy can never be pushed by accident.
+Student Setup/api-key.txt
+course-key.txt
+*.key
+
+# --- Student personal data ---------------------------------------------------
+# 31 real names and e-mail addresses. Not secret in the credential sense, but
+# not ours to publish.
+roster.csv
+Attendee Report*.xlsx
+proteomics-class-users.txt
+
+# --- Local tooling state, not part of the course -----------------------------
+.omc/
+.claude/settings.local.json
+
+# --- macOS noise -------------------------------------------------------------
+.DS_Store
+._*
+__MACOSX/

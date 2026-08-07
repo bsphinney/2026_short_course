@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Start Here — Proteomics on Hive with Claude Code</title>
+<style>
+  :root{
+    --ink:#1c1a17; --muted:#6b655c; --line:#e7e2d9; --bg:#faf8f4;
+    --accent:#b5541f; --card:#ffffff; --code-bg:#2b2722; --code-ink:#f3ede2;
+    --ok:#3f7c46; --warn:#c0392b;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.65;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:780px;margin:0 auto;padding:44px 24px 90px}
+  header{border-bottom:2px solid var(--ink);padding-bottom:20px;margin-bottom:10px}
+  h1{font-size:1.95rem;margin:0 0 6px;letter-spacing:-.015em}
+  .sub{color:var(--muted);font-size:1.03rem;margin:0}
+  h2{font-size:1.2rem;margin:40px 0 8px;display:flex;align-items:baseline;gap:12px}
+  h3{font-size:1rem;margin:22px 0 4px}
+  .num{display:inline-flex;align-items:center;justify-content:center;min-width:30px;height:30px;
+    background:var(--accent);color:#fff;border-radius:50%;font-size:.95rem;font-weight:700;
+    flex:none;transform:translateY(3px)}
+  p{margin:.55rem 0}
+  code.inline{background:#efeae1;padding:1px 6px;border-radius:5px;font-size:.9em;
+    font-family:"SF Mono",Menlo,Consolas,monospace}
+  pre{background:var(--code-bg);color:var(--code-ink);padding:14px 16px;border-radius:10px;
+    overflow-x:auto;font-family:"SF Mono",Menlo,Consolas,monospace;font-size:.87rem;
+    line-height:1.55;margin:.6rem 0}
+  pre .cmt{color:#9a927f}
+  pre .out{color:#8fb98f}
+  /* Anything the student must replace with their own detail. Highlighted so a
+     blind copy-paste looks obviously wrong before it is pasted. */
+  pre .you{color:#ffd479;font-weight:700;text-decoration:underline;
+    text-decoration-style:dotted;text-underline-offset:3px}
+  .you-key{background:#fdf6ee;border:1px solid #f0e2cf;border-radius:8px;
+    padding:.5rem .7rem;margin:.5rem 0 0;font-size:.92rem}
+  .step{margin-left:42px}
+  .callout{background:#fdf6ee;border:1px solid #f0e2cf;border-left:4px solid var(--accent);
+    border-radius:8px;padding:14px 18px;margin:18px 0}
+  .callout.warn{background:#fef4f1;border-color:#f4d6cc;border-left-color:var(--warn)}
+  .callout.ok{background:#f2f7f1;border-color:#d8e6d4;border-left-color:var(--ok)}
+  .callout strong{color:var(--ink)}
+  ul,ol{margin:.4rem 0;padding-left:1.2rem}
+  li{margin:.3rem 0}
+  table{border-collapse:collapse;width:100%;font-size:.9rem;margin:.7rem 0}
+  th,td{border:1px solid var(--line);padding:8px 11px;text-align:left;vertical-align:top}
+  th{background:#f2ede4;font-weight:600}
+  .tablewrap{overflow-x:auto}
+  td code,th code{background:#efeae1;padding:1px 5px;border-radius:4px;
+    font-family:"SF Mono",Menlo,Consolas,monospace;font-size:.88em}
+  footer{margin-top:50px;padding-top:18px;border-top:1px solid var(--line);
+    color:var(--muted);font-size:.85rem}
+  a{color:var(--accent)}
+  .kbd{font-size:.83rem;color:var(--muted)}
+  .big{font-size:1.02rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>Start Here</h1>
+    <p class="sub">Analysing proteomics data on Hive with Claude Code — Short Course 2026</p>
+  </header>
+
+  <div class="callout">
+    <strong>This one document replaces the earlier two handouts.</strong> If you have a page telling you
+    to install Claude Code with <code class="inline">curl</code> or to set something called
+    <code class="inline">ANTHROPIC_API_KEY</code> yourself — ignore it. You don't need to do either.
+    <br><br>
+    <strong>What you need before you start:</strong> your Hive username and password from your instructor.
+    Your username looks like <code class="inline">proteomics-class-NN</code>, where NN is your own
+    two-digit number. That's it — no API key, no
+    software to download, nothing to install on your own computer.
+  </div>
+
+  <div class="callout ok">
+    <strong>The whole thing in three steps.</strong> The rest of this handout explains these; if you get
+    lost, come back here.
+    <pre style="margin:.6rem 0 .2rem"><span class="cmt"># 1. connect — replace NN with YOUR number</span>
+ssh proteomics-class-<span class="you">NN</span>@hive.hpc.ucdavis.edu
+
+<span class="cmt"># 2. start Claude Code  (just 'claude-course' after the first time)</span>
+bash /quobyte/proteomics-grp/2026_shortcourse_data/start-claude.sh
+
+<span class="cmt"># 3. inside Claude Code, once ever — install the proteomics skill</span>
+/plugin marketplace add bsphinney/DE-LIMP
+/plugin install ucdavis-proteomics-core-pipeline</pre>
+    <div class="you-key"><strong>The highlighted <code class="inline">NN</code> is the only thing you
+      change.</strong> It is your own two-digit number, printed on your slip — if your slip says
+      <em>proteomics-class-04</em>, then <code class="inline">NN</code> is <code class="inline">04</code>.
+      Every command in this handout is written the same way: anything highlighted is yours to fill in.
+      Copy <code class="inline">NN</code> as-is and the login will simply be refused.</div>
+    <p style="margin:.7rem 0 0">Then just ask for what you want in plain English — and always say
+      <strong>"the species is mouse"</strong>.</p>
+  </div>
+
+  <h2><span class="num">1</span> Open a terminal</h2>
+  <div class="step">
+    <p>A <em>terminal</em> is a window where you type commands instead of clicking.</p>
+    <table>
+      <tr><th>Your computer</th><th>How to open it</th></tr>
+      <tr><td>Mac</td><td>Press <code class="inline">⌘ Space</code>, type <strong>Terminal</strong>, press Enter</td></tr>
+      <tr><td>Windows 10/11</td><td>Click Start, type <strong>PowerShell</strong>, press Enter</td></tr>
+      <tr><td>Linux</td><td>Press <code class="inline">Ctrl Alt T</code></td></tr>
+    </table>
+    <div class="callout">
+      <strong>Reading the code boxes in this handout.</strong> Type (or paste) only the command itself.
+      Lines starting with <code class="inline">#</code> are notes to you, not commands. Lines shown in
+      <span style="color:#3f7c46">green</span> are what the computer prints <em>back</em> — you don't type those.
+      <br><br>
+      <strong>Pasting into a terminal:</strong> Mac <code class="inline">⌘ V</code> ·
+      Windows PowerShell <strong>right-click</strong> · Linux <code class="inline">Ctrl Shift V</code>.
+    </div>
+  </div>
+
+  <h2><span class="num">2</span> Connect to Hive</h2>
+  <div class="step">
+    <p>Type this, replacing the highlighted <code class="inline">NN</code> with <strong>your own</strong>
+      number from your slip:</p>
+    <pre>ssh proteomics-class-<span class="you">NN</span>@hive.hpc.ucdavis.edu</pre>
+
+    <p>Three things will happen, in this order:</p>
+    <ol>
+      <li><strong>The first time only</strong>, it asks something like
+        <em>"Are you sure you want to continue connecting?"</em> — type <code class="inline">yes</code>
+        and press Enter.</li>
+      <li>It asks for your password. <strong>Nothing appears as you type — no dots, no stars.</strong>
+        That is normal and does not mean it isn't working. Type it and press Enter.</li>
+      <li>You get a new prompt ending in <code class="inline">$</code>. You are now on Hive.</li>
+    </ol>
+    <p>Check where you are:</p>
+    <pre><span class="cmt"># pwd = "print working directory" — shows where you currently are</span>
+pwd
+<span class="out">/home/proteomics-class-NN</span>   <span class="cmt">(with your own number)</span></pre>
+    <p>That's your own private folder on Hive, called your <strong>home directory</strong>. Everything you
+      make goes here. Nobody else can see it.</p>
+    <div class="callout warn">
+      <strong>Password rejected?</strong> The most common causes are a typo (you can't see it, so retype
+      carefully), or copying an extra space at the end. Check you used <em>your</em> username, not the
+      example. If it still fails, tell your instructor — don't keep retrying, repeated failures can lock
+      the account.
+    </div>
+  </div>
+
+  <h2><span class="num">3</span> Nine Linux commands — the whole survival kit</h2>
+  <div class="step">
+    <p>You genuinely don't need more than these. Try each one now.</p>
+    <div class="tablewrap">
+    <table>
+      <tr><th>Command</th><th>What it does</th></tr>
+      <tr><td><code>pwd</code></td><td>Shows where you are</td></tr>
+      <tr><td><code>ls</code></td><td>Lists what's here</td></tr>
+      <tr><td><code>ls -la</code></td><td>Lists with sizes and dates</td></tr>
+      <tr><td><code>cd <em>somewhere</em></code></td><td>Moves you into a folder ("change directory")</td></tr>
+      <tr><td><code>cd ~</code></td><td>Goes back to your home directory. <code>~</code> always means "my home"</td></tr>
+      <tr><td><code>cat <em>file</em></code></td><td>Prints a small text file to the screen</td></tr>
+      <tr><td><code>less <em>file</em></code></td><td>Views a big file. Press <code>q</code> to quit</td></tr>
+      <tr><td><code>mkdir <em>name</em></code></td><td>Makes a new folder</td></tr>
+      <tr><td><code>exit</code></td><td>Logs out of Hive</td></tr>
+    </table>
+    </div>
+
+    <h3>Three habits that will save you the most typing</h3>
+    <ul>
+      <li><strong>Tab completion.</strong> Start typing a name and press <code class="inline">Tab</code> —
+        it finishes it for you. This matters enormously here, because our data files have names like
+        <code class="inline">Aug26_2025_100spd_DIA_Beads_B_AKM_S2-B4_1_16471.d</code>. Type
+        <code class="inline">Aug26_2025_100spd_DIA_Be</code> then Tab. Never type a filename in full.</li>
+      <li><strong>Up arrow</strong> brings back your previous command, so you can fix a typo instead of
+        retyping the whole line.</li>
+      <li><strong><code class="inline">Ctrl C</code></strong> stops whatever is currently running and gives
+        you your prompt back. It is safe — you'll use it later to stop <em>watching</em> a job without
+        stopping the job itself.</li>
+    </ul>
+
+    <h3>What a "path" is</h3>
+    <p>A path is an address, with <code class="inline">/</code> between the parts, read left to right:</p>
+    <pre>/quobyte/proteomics-grp/2026_shortcourse_data
+ └─ top     └─ our group's  └─ this course's
+    level      storage         folder</pre>
+    <p>A path starting with <code class="inline">/</code> works from anywhere, so you can always paste a
+      full path and it will be understood. That's why every path in this handout starts with a slash.</p>
+  </div>
+
+  <h2><span class="num">4</span> Start Claude Code</h2>
+  <div class="step">
+    <p class="big">This is the only command you need. Copy the whole line:</p>
+    <pre>bash /quobyte/proteomics-grp/2026_shortcourse_data/start-claude.sh</pre>
+    <p>The <strong>first</strong> time you run it, it installs Claude Code into your home directory — about
+      a minute — and then starts it. You don't need to run it twice.</p>
+    <p>It pauses for a few seconds on <em>&ldquo;Getting you a compute node&rdquo;</em>. That is normal and
+      it matters — see the box below. Then you'll see a green line naming the machine you landed on:</p>
+    <pre>On compute node hive-dc-7-5-46, job 20000944 — not the login node.</pre>
+    <p>You'll know it worked when the screen changes and you can type a question in plain English.</p>
+    <div class="callout ok">
+      <strong>Why it fetches you a machine of your own.</strong> When you log in, you land on a
+      <em>login node</em> shared by the whole campus. It is for typing commands and sending work off —
+      not for doing work. But Claude runs commands on your behalf, and those run wherever Claude is
+      running. Thirty-one of us doing that on the login node at once would slow it to a crawl and get
+      the class accounts suspended.
+      <br><br>
+      So the start-up command borrows you a small slice of a real compute node
+      (4 cores, 16 GB, up to 8 hours) and starts Claude <em>there</em>. You don't have to do anything —
+      it happens every time. Big searches are still sent off as their own separate jobs on top of this.
+    </div>
+    <div class="callout ok">
+      <strong>Next time, just type this:</strong>
+      <pre style="margin:.5rem 0 0">claude-course</pre>
+      The first run sets that shortcut up for you. If it doesn't work yet, open a fresh terminal — or run
+      <code class="inline">source ~/.bashrc</code> once.
+    </div>
+    <div class="callout">
+      <strong>"Which folder should I be in when I start it?"</strong> Your home directory — and the command
+      above puts you there automatically, wherever you happened to be. You never need to
+      <code class="inline">cd</code> anywhere first.
+      <br><br>
+      Claude Code writes its work into whatever folder it started in, so starting at home keeps your results
+      in your own space and keeps 30 people from tripping over each other. You can still <em>read</em> the
+      shared data from there, because every data path in this handout starts with
+      <code class="inline">/quobyte/</code> — a full address that works from anywhere.
+    </div>
+    <div class="callout">
+        <strong>It starts up saying &ldquo;Sonnet 5 at medium effort&rdquo; — that is deliberate.</strong>
+        The whole class shares one budget, and those two settings are what keep 31 people inside it.
+        <br><br>
+        <strong>Model</strong> is which Claude answers you; <strong>effort</strong> is how long it thinks
+        before replying. A bigger model and harder thinking cost several times more per question and buy you
+        nothing here — the proteomics knowledge is the same either way, and the pipeline does the real work.
+        Turning either up mostly spends the class's money faster.
+        <br><br>
+        You never need to set them: the start-up command does it every time. Just don't change them with
+        <code class="inline">/model</code> or <code class="inline">/effort</code> — and if you already have,
+        <code class="inline">/exit</code> and start again to get the right settings back.
+      </div>
+      <p>Three things to know while you're in Claude Code:</p>
+    <ul>
+      <li><code class="inline">/model</code> shows which model you're on, and
+          <code class="inline">/effort</code> how hard it thinks. <strong>Both are already set for you —
+          leave them alone.</strong></li>
+      <li><code class="inline">/exit</code> leaves Claude Code and returns you to the normal prompt.</li>
+      <li>Ask it anything in plain English — including <em>"what does this error mean?"</em> Explaining
+        things is one of the things it's best at, so use it as your first port of call.</li>
+    </ul>
+    <div class="callout warn">
+      <strong>If it says the course key is missing</strong>, that is not something you can fix — it's a
+      setup step on the instructor's side. Tell your instructor:
+      <em>"start-claude.sh says the course key is missing."</em>
+    </div>
+  </div>
+
+  <h2><span class="num">5</span> Install the proteomics skill</h2>
+  <div class="step">
+    <p>This teaches Claude Code how to do proteomics properly — which search engine to use, the right
+      settings for our instrument, and how to run jobs correctly on the cluster.</p>
+    <p><strong>Inside Claude Code</strong> (not at the normal prompt), type these two lines, one at a time:</p>
+    <pre>/plugin marketplace add bsphinney/DE-LIMP
+/plugin install ucdavis-proteomics-core-pipeline</pre>
+    <p>You only ever do this once. Check it's there by typing <code class="inline">/plugin</code>.</p>
+    <div class="callout">
+      <strong>Why two commands?</strong> The first adds the <em>catalogue</em> — it tells Claude Code where to
+      look. The second installs the one skill we use from it. If it asks where to install, choose
+      <strong>user</strong>, so it works in every folder rather than only the one you happen to be in.
+      <br><br>
+      <strong>Installed it on an earlier day?</strong> Run
+      <code class="inline">/plugin install ucdavis-proteomics-core-pipeline</code> again to pick up the latest
+      version. You want <strong>1.2.0 or newer</strong> — older copies could quietly pick a different search
+      engine from the one you asked for.
+    </div>
+  </div>
+
+  <h2><span class="num">6</span> Find the course data</h2>
+  <div class="step">
+    <p>The data lives in our group storage, shared by the whole class.</p>
+    <div class="callout warn">
+      <strong>Treat the data folders as look-only.</strong> You are in the group that owns them, so the
+      system will <em>let</em> you change or delete files there — but these are the only copies, shared by
+      everyone. Read from them; never write into them. All your own work goes in your home directory, which
+      is private to you and where Claude Code starts by default.
+    </div>
+    <p><code class="inline">/exit</code> Claude Code for a moment so you're at the normal
+      <code class="inline">$</code> prompt, then look:</p>
+    <pre><span class="cmt"># the main course dataset — mouse samples, three preparation methods</span>
+ls /quobyte/proteomics-grp/2026_shortcourse_data/2025_data | head</pre>
+    <p>You should see a long list of names ending in <code class="inline">.d</code>. Each
+      <code class="inline">.d</code> is <strong>one mass-spec run</strong> — it looks like a file but is
+      actually a folder full of instrument data.</p>
+    <p>Count them, and see the three preparation methods:</p>
+    <pre><span class="cmt"># how many runs are there?</span>
+ls -d /quobyte/proteomics-grp/2026_shortcourse_data/2025_data/*.d | wc -l
+<span class="out">96</span>
+
+<span class="cmt"># just the bead-prep runs</span>
+ls -d /quobyte/proteomics-grp/2026_shortcourse_data/2025_data/*Beads*.d | wc -l
+<span class="out">31</span></pre>
+    <p>Reading a filename — they all follow the same pattern:</p>
+    <pre>Aug26_2025_100spd_DIA_Beads_B_AKM_S2-B4_1_16471.d
+   │        │     │    │     │  │
+   date     speed │    prep  │  whose sample
+                  method     bench group</pre>
+    <p>The three prep methods are <strong>Beads</strong> (31 runs), <strong>Strap</strong> (30) and
+      <strong>Urea</strong> (30). There are also 5 <strong>HeLa50</strong> quality-control runs.</p>
+
+    <h3>The other folders worth knowing</h3>
+    <div class="tablewrap">
+    <table>
+      <tr><th>What</th><th>Where</th></tr>
+      <tr><td>Main course data (96 runs)</td><td><code>/quobyte/proteomics-grp/2026_shortcourse_data/2025_data</code></td></tr>
+      <tr><td>Practice HeLa file (<strong>human</strong>)</td><td><code>/quobyte/proteomics-grp/2026_shortcourse_data/hela</code></td></tr>
+      <tr><td>These handouts</td><td><code>/quobyte/proteomics-grp/2026_shortcourse_data/handouts</code></td></tr>
+      <tr><td>Worked example analyses</td><td><code>/quobyte/proteomics-grp/2026_shortcourse_data/prep_method_comparison_3x3</code></td></tr>
+    </table>
+    </div>
+    <div class="callout">
+      <strong>Always save your own results in your home directory</strong> (<code class="inline">~</code>).
+      Every example below does this — notice each one says "put the results in my home directory".
+    </div>
+  </div>
+
+  <h2><span class="num">7</span> Run your first search</h2>
+  <div class="step">
+    <p>Start Claude Code again (<code class="inline">claude-course</code>) and ask in plain English.
+      You can paste this whole thing:</p>
+    <pre>Search this timsTOF DIA file with DIA-NN and tell me how many
+proteins were identified. The species is mouse. Put all the
+results in my home directory.
+
+/quobyte/proteomics-grp/2026_shortcourse_data/2025_data/Aug26_2025_100spd_DIA_Beads_B_AKM_S2-B4_1_16471.d</pre>
+    <p>Claude will work out that this is DIA data from a timsTOF, pick the right validated settings, fetch
+      the mouse protein database, write a cluster job, submit it, and watch it until it finishes.</p>
+    <p><strong>It will ask you to confirm before it starts.</strong> Read that summary — it tells you what
+      it's about to do. Then say yes.</p>
+
+    <h3>When you're ready for a real comparison</h3>
+    <p>The interesting question in this dataset is whether the three preparation methods differ. Try:</p>
+    <pre>Compare three bead-prep and three urea-prep runs from
+/quobyte/proteomics-grp/2026_shortcourse_data/2025_data
+The species is mouse. Which proteins differ between the two methods?</pre>
+    <div class="callout warn">
+      <strong>Always say which species.</strong> It cannot be worked out from the file, and the wrong
+      species doesn't produce an error — it just quietly finds far fewer proteins.
+      <ul>
+        <li>Anything in <code class="inline">2025_data</code> (the 96 course runs) is <strong>mouse</strong>.</li>
+        <li>The file in <code class="inline">hela</code> is <strong>human</strong>.</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2><span class="num">8</span> Watching your job</h2>
+  <div class="step">
+    <p>Big searches don't run in your terminal — they get sent to the cluster's shared computers as a
+      <strong>job</strong>. Submitting prints a job number like <code class="inline">19527064</code>.</p>
+    <pre><span class="cmt"># what are my jobs doing?  PD = waiting, R = running</span>
+squeue -u $USER
+
+<span class="cmt"># what happened to a job that finished?</span>
+sacct -j 19527064 --format=JobID,State,Elapsed
+
+<span class="cmt"># watch the output appear as it's written (Ctrl C to stop watching)</span>
+tail -f ~/my_search.log
+
+<span class="cmt"># cancel a job you no longer want</span>
+scancel 19527064</pre>
+    <div class="callout ok">
+      <strong>You can close your laptop and go home.</strong> Your job keeps running on the cluster without
+      you. Log back in tomorrow, start Claude Code, and say <em>"resume this analysis"</em> — it reads its
+      own notes and carries on from where it got to.
+    </div>
+    <div class="callout warn">
+      <strong>Never run a big search directly at the <code class="inline">$</code> prompt.</strong> Claude
+      Code already runs on a compute node, so you are not on the login node — but the slice you were given
+      is only 4 cores and it ends after 8 hours. A real search wants 32 cores and must outlive your
+      terminal, so it goes off as its own job. Claude does this for you automatically; this matters only if
+      you start writing your own commands.
+      <br><br>
+      And if you ever open a second terminal to Hive by hand, that one <em>is</em> on the login node. Don't
+      run searches there.
+    </div>
+  </div>
+
+  <h2><span class="num">9</span> What a good result looks like</h2>
+  <div class="step">
+    <p>So you can tell success from a silent failure. Both rows below are real runs on these accounts,
+      on the same HeLa quality-control file. Which number you should expect depends on how you searched —
+      compare like with like:</p>
+    <div class="tablewrap">
+    <table>
+      <tr><th>Searching with the ready-made library</th><td>4,733 proteins &middot; 39,068 peptides &middot; about 3 minutes</td></tr>
+      <tr><th>Searching without one (built from scratch)</th><td>4,466 proteins &middot; 35,952 peptides &middot; about 6 minutes</td></tr>
+    </table>
+    </div>
+    <div class="callout ok">
+      <strong>Ask for the report — it is the part worth reading.</strong> Say
+      <em>&ldquo;make me the HTML report&rdquo;</em> and you get one page holding the quality-control panels,
+      the figures and the write-up together. The QC panels come first on purpose: they tell you whether to
+      believe everything below them. Step 10 shows how to copy it to your own computer.
+    </div>
+    <p>Your main results file is <code class="inline">report.parquet</code>. The one most people actually
+      want is <code class="inline">report.pg_matrix.tsv</code> — a table of proteins against samples.
+      Ask Claude Code to explain any file it produces.</p>
+    <div class="callout ok">
+      <strong>Sanity-check your own numbers.</strong> If a mouse sample gives you a few hundred proteins
+      instead of a few thousand, something went wrong — often the wrong species. Ask Claude Code to look at
+      the log and QC summary with you. Getting a number is easy; knowing whether to believe it is the real
+      skill this course is teaching.
+    </div>
+  </div>
+
+  <h2><span class="num">10</span> Get your results onto your own computer</h2>
+  <div class="step">
+    <p>Your results live on Hive. Copy them to your own laptop so you can read them properly — and so you
+      still have them after the course ends.</p>
+
+    <p><strong>First, on Hive, ask Claude Code:</strong></p>
+    <pre>make me the HTML report, then zip up my session folder</pre>
+    <p>The report is a single file holding the quality-control panels, the figures and the write-up all
+      together. It opens by double-clicking in any browser — no Word, nothing to install.</p>
+
+    <div class="callout ok">
+      <strong>The easy way: double-click <code class="inline">Get My Results.cmd</code></strong> — your
+      instructor gives you two files with this handout: <code class="inline">Get My Results.cmd</code> and
+      <code class="inline">Get-My-Results.ps1</code>. <strong>Save both into the same folder</strong>
+      (Downloads is fine), then double-click the <code class="inline">.cmd</code> one.
+      <br><br>
+      Pick your number from the class list. <strong>That is the only thing you do</strong> — there is no
+      password to type. Your files land in a <strong>Proteomics-Results</strong> folder on your Desktop,
+      which it opens for you.
+      <br><br>
+      The very first time, it spends a few seconds fetching a small file-transfer helper. That is normal,
+      it only happens once, and nothing is installed on your computer.
+    </div>
+
+    <div class="callout warn">
+      <strong>&ldquo;…is not digitally signed. You cannot run this script&rdquo;?</strong> You double-clicked
+      the <code class="inline">.ps1</code> instead of the <code class="inline">.cmd</code>. Windows blocks
+      downloaded PowerShell scripts, which is exactly what the <code class="inline">.cmd</code> is there to
+      handle — use that one.
+      <br><br>
+      <strong>Still asking for a password?</strong> You have an older copy of
+      <code class="inline">Get-My-Results.ps1</code> in that folder. Delete it, save the one your instructor
+      gave you in its place, and run the <code class="inline">.cmd</code> again.
+    </div>
+
+    <p><strong>Already have SmarTTY open?</strong> It can fetch files by itself — SmarTTY supports SCP
+      downloads and can show your Hive folders in a Windows-style browser. Look for <strong>SCP</strong> in
+      its menus. Your files are under <code class="inline">sessions</code> in your home folder.</p>
+
+    <p><strong>Using PowerShell to reach Hive? Do it this way.</strong> You already have everything you
+      need — Windows ships with <code class="inline">scp</code>, the same way it ships with
+      <code class="inline">ssh</code>. Nothing to download.</p>
+
+    <p><strong>Step 1 — in Claude, on Hive</strong>, ask it to package the run:</p>
+    <pre><span class="cmt">(type this to Claude, not at the $ prompt)</span>
+zip up my results for me</pre>
+    <p>It writes a single <code class="inline">.zip</code> into your
+      <code class="inline">sessions</code> folder with the report, the tables and the settings inside.
+      One file is far easier to carry home than a tree of them.</p>
+
+    <p><strong>Step 2 — open a <em>new</em> PowerShell window</strong> on your own computer. Not the one
+      logged into Hive — a fresh one, so you are on your own machine. Then:</p>
+    <pre><span class="cmt"># go to your Desktop so the files are easy to find</span>
+cd $HOME\Desktop
+
+<span class="cmt"># fetch every zip you have made (use YOUR number)</span>
+scp "proteomics-class-<span class="you">NN</span>@hive.hpc.ucdavis.edu:sessions/*.zip" .</pre>
+    <p>It asks for your Hive password — the same one you log in with, and again nothing appears as you
+      type. The zips land on your Desktop. Right-click one and choose <strong>Extract All</strong>.</p>
+
+    <div class="callout warn">
+      <strong>Don't try to copy the whole folder.</strong> It is tempting to run
+      <code class="inline">scp -r</code> on your <code class="inline">sessions</code> folder, but the run
+      folders point at the shared course data, and <code class="inline">scp -r</code> follows those
+      pointers — one folder that looks like 90 MB comes down as nearly a gigabyte of raw data you already
+      have. Fetch the <code class="inline">.zip</code> instead. If you want loose files rather than a zip,
+      ask Claude to <em>&ldquo;copy just my reports into a folder called reports&rdquo;</em> and then run
+      <code class="inline">scp "proteomics-class-<span class="you">NN</span>@hive.hpc.ucdavis.edu:reports/*" .</code>
+    </div>
+
+    <div class="callout warn">
+      <strong>If you type it by hand, three things break it — all avoidable.</strong>
+      <ul>
+        <li><strong>It must be one line.</strong> Wrapping on screen is fine; pressing Enter in the middle is
+          not. A command missing its ending is the most common failure here.</li>
+        <li><strong>Keep the dot at the end.</strong> That lone <code class="inline">.</code> means &ldquo;put
+          it right here&rdquo;. Without it, scp has nowhere to put the file and only prints its own help.</li>
+        <li><strong>Swap in your own number.</strong> If a command still contains
+          <code class="inline">NN</code>, it hasn't been filled in yet and Hive will refuse it. Put your own
+          two-digit number there, or ask Claude Code to write the line out with it already filled in.</li>
+      </ul>
+    </div>
+
+    <div class="callout">
+      <strong>Why there's no long <code class="inline">/home/...</code> path.</strong> After the colon, scp
+      already starts in your Hive home folder, so <code class="inline">sessions/*.zip</code> is enough.
+      Shorter command, less to mistype.
+    </div>
+
+    <div class="callout warn">
+      <strong>Do this before the course ends.</strong> These accounts are temporary and get switched off
+      afterwards. Anything you have not copied to your own computer goes away with them.
+    </div>
+  </div>
+
+  <h2><span class="num">11</span> If something goes wrong</h2>
+  <div class="step">
+    <div class="tablewrap">
+    <table>
+      <tr><th>You see</th><th>What it means / what to do</th></tr>
+      <tr><td><code>Permission denied, please try again</code></td>
+          <td>Wrong password, or you typed the example username. Retype carefully — you won't see the characters.</td></tr>
+      <tr><td><code>command not found: claude</code></td>
+          <td>Run the long <code>bash /quobyte/...start-claude.sh</code> line again, or open a new terminal.</td></tr>
+      <tr><td><code>the course key is missing</code></td>
+          <td>Instructor-side setup. Tell your instructor — you can't fix this.</td></tr>
+      <tr><td><code>No such file or directory</code></td>
+          <td>A typo in a path. Use <code>Tab</code> to complete names instead of typing them.</td></tr>
+      <tr><td><code>That session ended early</code></td>
+          <td>The cluster took your compute node back — it happens occasionally and costs you nothing.
+            Type <code>claude-course</code> again and say <em>"carry on from where we left off"</em>.</td></tr>
+      <tr><td>It sits on <em>"Getting you a compute node"</em></td>
+          <td>Normally a few seconds. If it lasts more than a couple of minutes the cluster is busy —
+            wait, or press <code>Ctrl C</code> and try again shortly.</td></tr>
+      <tr><td>&ldquo;you already have a Claude session&rdquo;</td>
+          <td>You closed a window without typing <code>/exit</code>, so it's still holding a machine.
+            Run the <code>scancel</code> command it prints.</td></tr>
+      <tr><td>Terminal frozen / nothing responds</td>
+          <td>Press <code>Ctrl C</code>. If your connection dropped, just log in again — your jobs kept running.</td></tr>
+      <tr><td>A billing or limit error</td>
+          <td>The class may have reached the shared budget. Tell your instructor.</td></tr>
+      <tr><td>Only a few hundred proteins found</td>
+          <td>Usually the wrong species. Say "the species is mouse" and run it again.</td></tr>
+    </table>
+    </div>
+  </div>
+
+  <div class="callout warn">
+    <strong>Two shared budgets — please be considerate.</strong>
+    <ul>
+      <li><strong>Claude Code</strong> is one shared allowance for the whole class. The start-up command
+          already puts you on the right model and effort level — <strong>don't raise either</strong>
+          (<code class="inline">/model</code>, <code class="inline">/effort</code>): a bigger model or harder
+          thinking costs several times more per question and gives you no better proteomics. Ask Claude to
+          read result files <em>from disk</em> rather than pasting big tables into the chat, and
+          <code class="inline">/exit</code> when you're done.</li>
+      <li><strong>The cluster</strong> is shared with the whole campus. Don't submit ten jobs to see what
+        sticks — one well-described request beats ten guesses.</li>
+    </ul>
+  </div>
+
+  <footer>
+    Hive user guide: <a href="https://hpc.ucdavis.edu/">hpc.ucdavis.edu</a> ·
+    Claude Code docs: <a href="https://code.claude.com/docs/en/quickstart">code.claude.com/docs</a><br>
+    UC Davis Proteomics Core — Short Course 2026. Stuck on something not listed here? Ask your instructor
+    or ask Claude Code itself — explaining errors is one of the things it's best at.
+  </footer>
+</div>
+</body>
+</html>

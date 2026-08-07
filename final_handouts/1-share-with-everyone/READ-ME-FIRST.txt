@@ -1,0 +1,22 @@
+Proteomics Short Course 2026 — student files
+============================================
+
+In this folder:
+
+  HANDOUT-hive-start-here.html   Start here. Open it in a browser.
+  Get My Results.cmd             Downloads your results to your own computer.
+
+MISSING A FILE?
+---------------
+Get My Results.cmd needs a partner file called Get-My-Results.ps1, and that one
+is NOT in this folder on purpose.
+
+It contains the class account passwords, and everyone on the course can read
+this shared folder — so it is handed out privately instead, the same way you
+received your own password.
+
+Ask your instructor for Get-My-Results.ps1. Save it in the SAME folder as
+Get My Results.cmd, then double-click the .cmd file.
+
+(The copy in superseded/ is an older version that asks you to type your password
+every time. Do not use it.)

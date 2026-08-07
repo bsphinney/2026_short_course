@@ -1,0 +1,161 @@
+# =============================================================================
+#  Get My Results  --  Proteomics Short Course 2026
+#
+#  Downloads YOUR results from Hive to this computer.
+#  Pick your number. That is the only thing you do.
+#
+#  RUN IT: double-click "Get My Results.cmd" (not this file).
+#
+#  ---------------------------------------------------------------------------
+#  THIS FILE CONTAINS CLASS ACCOUNT PASSWORDS once the instructor has filled
+#  them in. Keep it on your own computer. Do not post it anywhere or e-mail it
+#  outside the class. These are temporary course accounts, switched off when
+#  the course ends.
+#  ---------------------------------------------------------------------------
+#
+#  INSTRUCTOR: this file is the TEMPLATE -- the roster below is a placeholder.
+#  Fill it in on Hive, where the passwords already live:
+#      scp Get-My-Results.ps1.template brettsp@hive.hpc.ucdavis.edu:
+#      scp fill-in-passwords.sh        brettsp@hive.hpc.ucdavis.edu:
+#      ssh brettsp@hive.hpc.ucdavis.edu "bash fill-in-passwords.sh"
+#      scp brettsp@hive.hpc.ucdavis.edu:Get-My-Results.ps1 .
+#  Hand out the finished Get-My-Results.ps1 together with Get My Results.cmd.
+# =============================================================================
+
+$HiveHost = 'hive.hpc.ucdavis.edu'
+$PscpUrl  = 'https://the.earth.li/~sgtatham/putty/latest/w64/pscp.exe'
+
+# user | password | display name (leave Name blank to show the account instead)
+$Roster = @(
+__ROSTER__
+)
+
+$ErrorActionPreference = 'Stop'
+function Done($code = 0) {
+  Write-Host ''; Write-Host 'Press Enter to close.' -ForegroundColor DarkGray
+  [void](Read-Host); exit $code
+}
+
+Clear-Host
+Write-Host ''
+Write-Host '  Proteomics Short Course 2026 - Get My Results' -ForegroundColor Cyan
+Write-Host '  ---------------------------------------------' -ForegroundColor Cyan
+Write-Host ''
+
+if ($Roster.Count -eq 0) {
+  Write-Host '  This copy has not been set up yet - the class list is empty.' -ForegroundColor Red
+  Write-Host '  Ask your instructor for the finished version.'
+  Done 1
+}
+
+# --- pick ---------------------------------------------------------------------
+Write-Host '  Which one are you?'
+Write-Host ''
+for ($i = 0; $i -lt $Roster.Count; $i++) {
+  $label = if ($Roster[$i].Name) { "$($Roster[$i].Name)   ($($Roster[$i].User))" } else { $Roster[$i].User }
+  Write-Host ('    {0,2}. {1}' -f ($i + 1), $label)
+}
+Write-Host ''
+$choice = Read-Host '  Type your number and press Enter'
+$n = 0
+if (-not [int]::TryParse($choice.Trim(), [ref]$n) -or $n -lt 1 -or $n -gt $Roster.Count) {
+  Write-Host ''
+  Write-Host ("  That was not a number between 1 and {0}. Run it again." -f $Roster.Count) -ForegroundColor Red
+  Done 1
+}
+$Me = $Roster[$n - 1]
+
+# --- the transfer helper ------------------------------------------------------
+# Windows' built-in scp has no way to accept a password, so this uses PuTTY's
+# pscp, which does. It is fetched once from the official PuTTY site and kept
+# beside this script. Nothing is installed and no system setting is changed.
+$here = Split-Path -Parent $MyInvocation.MyCommand.Path
+$pscp = Join-Path $here 'pscp.exe'
+if (-not (Test-Path $pscp)) {
+  Write-Host '  First run: fetching the file-transfer helper (about 1 MB)...' -ForegroundColor DarkGray
+  try {
+    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+    Invoke-WebRequest -Uri $PscpUrl -OutFile $pscp -UseBasicParsing
+  } catch {
+    Write-Host ''
+    Write-Host '  Could not download the helper. Are you online?' -ForegroundColor Red
+    Write-Host "  Fetch it by hand from:  $PscpUrl"
+    Write-Host '  Save it as pscp.exe next to this script, then run this again.'
+    Done 1
+  }
+}
+
+$Dest = Join-Path ([Environment]::GetFolderPath('Desktop')) 'Proteomics-Results'
+New-Item -ItemType Directory -Force -Path $Dest | Out-Null
+
+Write-Host ''
+Write-Host "  Account  : $($Me.User)"
+Write-Host "  Saving to: $Dest"
+Write-Host ''
+Write-Host '  Downloading - no password to type, it is already set up.' -ForegroundColor Green
+Write-Host ''
+
+function Get-FileCount { @(Get-ChildItem -Path $Dest -File -ErrorAction SilentlyContinue).Count }
+
+$got = 0
+# pscp supports only ONE wildcard level ("multiple-level wildcards unsupported"),
+# so sessions/*/output/*.html cannot be fetched directly. It does not need to be:
+# the .zip already contains the whole session, report included. Fetch the zips,
+# then lift the reports out locally so each is one double-click away.
+foreach ($p in @(
+    @{ Path = 'sessions/*.zip';  What = 'zipped session folders' },
+    @{ Path = 'sessions/*.html'; What = 'any loose reports' })) {
+  Write-Host "  Looking for $($p.What)..." -ForegroundColor DarkGray
+  $before = Get-FileCount
+  # -batch: never sit waiting at an interactive prompt.
+  # -hostkey: Hive's real host-key fingerprints, pinned. pscp accepts the flag
+  #           more than once, so both the ED25519 and ECDSA keys are listed and
+  #           whichever gets negotiated matches. A wildcard is NOT valid syntax
+  #           here (pscp rejects it outright), and pinning the actual keys means
+  #           the student is never asked a trust question they cannot answer --
+  #           while still refusing an impostor server.
+  & $pscp -batch -pw $Me.Pass -hostkey 'SHA256:b5nv86Ciaqg1yrUVai6bZ0Hk4IpzAFLWtIPDBdacbQM' -hostkey 'SHA256:AmJ+z2miIMXlSAcm7k8YwKlIWk5+VqxyT0R4q3fvpcA' "$($Me.User)@${HiveHost}:$($p.Path)" $Dest 2>&1 |
+    ForEach-Object { if ($_ -notmatch 'no such file|matched no files|unable to open') { Write-Host "    $_" } }
+  $new = (Get-FileCount) - $before
+  if ($new -gt 0) { Write-Host "    got $new file(s)" -ForegroundColor Green; $got += $new }
+  else { Write-Host '    none found (fine if you have not made them yet)' -ForegroundColor DarkGray }
+}
+
+# --- lift the reports out of the zips ----------------------------------------
+# A .zip is not something most people want to open by hand, and the report is the
+# thing they actually came for. Unpack each one and copy every report to the top
+# level, named after its session so several sessions cannot collide.
+$zips = @(Get-ChildItem -Path $Dest -Filter *.zip -File -ErrorAction SilentlyContinue)
+if ($zips.Count -gt 0) {
+  Write-Host ''
+  Write-Host '  Unpacking your reports...' -ForegroundColor DarkGray
+  foreach ($z in $zips) {
+    $into = Join-Path $Dest $z.BaseName
+    try {
+      if (Test-Path $into) { Remove-Item $into -Recurse -Force }
+      Expand-Archive -Path $z.FullName -DestinationPath $into -Force
+      foreach ($h in @(Get-ChildItem -Path $into -Recurse -Filter *.html -File -ErrorAction SilentlyContinue)) {
+        $flat = Join-Path $Dest ("{0}__{1}" -f $z.BaseName, $h.Name)
+        Copy-Item $h.FullName $flat -Force
+        Write-Host "    report: $(Split-Path $flat -Leaf)" -ForegroundColor Green
+      }
+    } catch {
+      Write-Host "    (could not unpack $($z.Name) - the .zip is still there)" -ForegroundColor DarkGray
+    }
+  }
+}
+
+Write-Host ''
+if ($got -gt 0) {
+  Write-Host "  Done - $got file(s) on your Desktop, in Proteomics-Results." -ForegroundColor Green
+  Write-Host '  Double-click any .html file to read your report in a browser.'
+  Start-Process explorer.exe $Dest
+} else {
+  Write-Host '  Nothing was copied.' -ForegroundColor Yellow
+  Write-Host ''
+  Write-Host '  Most likely you have not made the files yet. On Hive, ask Claude Code:'
+  Write-Host '     make me the HTML report, then zip up my session folder'
+  Write-Host ''
+  Write-Host '  Then run this again. To see what you have:  ls sessions/'
+}
+Done 0
