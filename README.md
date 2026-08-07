@@ -3,6 +3,10 @@
 Setup and teaching materials for running the short course on the **Hive** HPC cluster,
 where each student gets a Hive account and drives a proteomics analysis through Claude Code.
 
+## 2026 Data and handouts
+
+**https://bioshare.bioinformatics.ucdavis.edu/bioshare/view/short_course_2026/**
+
 ## What's here
 
 | | |
