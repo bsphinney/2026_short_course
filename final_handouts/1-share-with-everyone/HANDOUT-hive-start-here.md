@@ -232,25 +232,48 @@ There are **four** prep methods this year: **bead** (34 runs), **urea** (34), **
 
 ## 7. Run your first search
 
-Start Claude Code again (`claude-course`) and ask in plain English. You can paste this whole thing:
+Start Claude Code again (`claude-course`) and ask in plain English. Paste this whole thing, putting **your own initials** in place of the highlighted `XX-Y`:
 
-    Search this timsTOF DIA file with DIA-NN and tell me how many
-    proteins were identified. The species is mouse. Put all the
-    results in my home directory.
+    Search all my data with DIA-NN. My initials are XX-Y.
+    The species is mouse. Use the proteomics skill, and tell me how many
+    proteins and peptides each of my prep methods gave.
+    Then zip up the results. Put everything in my home directory.
 
-    /quobyte/proteomics-grp/2026_shortcourse_data/2026_data/04Aug2026_AB-G_bead_100spd_DIA_S3-E2_1_23351.d
+> [!IMPORTANT]
+>
+> **Your initials are in every one of your filenames**, just after the date — `04Aug2026_AB-G_bead_100spd_DIA_...`. The letter after the dash is your bench group. If you're not sure which runs are yours, ask Claude *“list my runs”* first.
+>
 
-Claude will work out that this is DIA data from a timsTOF, pick the right validated settings, fetch the mouse protein database, write a cluster job, submit it, and watch it until it finishes.
+You have **one run per prep method** — three or four runs in total. Claude will work out that these are DIA data from a timsTOF, pick the right validated settings, fetch the mouse protein database, write a cluster job, submit it, watch it finish, and package the output.
+
+> [!WARNING]
+>
+> **Why this asks for counts and not a statistics table.** You have only one run of each prep, so there is nothing to average and no way to tell a real difference from run-to-run noise. Counting proteins and peptides per method is exactly what one run each can honestly tell you. The statistical comparison needs the whole class's data — that's the next section.
+>
 
 **It will ask you to confirm before it starts.** Read that summary — it tells you what it's about to do. Then say yes.
 
 ### When you're ready for a real comparison
 
-The interesting question in this dataset is whether the three preparation methods differ. Try:
+Now you need replicates, so use the **whole class's** runs rather than your own. Two comparisons the data can actually support:
 
-    Compare three bead-prep and three urea-prep runs from
-    /quobyte/proteomics-grp/2026_shortcourse_data/2026_data
-    The species is mouse. Which proteins differ between the two methods?
+**1. Do the prep methods differ?** This is the main question, with about 30 runs per method:
+
+    Using all the DIA runs in ~/course/2026_data, compare the bead,
+    urea and s-trap preps. The species is mouse. Use the proteomics
+    skill for the differential expression. Which proteins differ?
+    Put the results in my home directory.
+
+**2. Does the bench you worked at matter?** The letter after the dash in each name is the bench group — `G`reen, `R`ed, `B`lue, `Y`ellow. That is a nice reproducibility check:
+
+    Compare the green-bench and red-bench bead runs in ~/course/2026_data
+    with DIA-NN. The species is mouse. Use the proteomics skill.
+    Are there real differences between the two benches?
+
+> [!TIP]
+>
+> **Compare like with like.** Ask for one prep method at a time when comparing benches (green bead vs red bead, 6 runs vs 10). If you pool every prep together, the difference between bead and urea is far bigger than any bench effect and will swamp the result.
+>
 
 > [!WARNING]
 >
