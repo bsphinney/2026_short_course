@@ -1,0 +1,126 @@
+# =============================================================================
+#  Get-My-Raw-Data-EASY.ps1 — pick your name, pick your initials, done.
+#
+#  No password to type. Run it by double-clicking "Get My Raw Data EASY.cmd".
+#
+#  *** THIS FILE IS A TEMPLATE. The version with __ROSTER__ still in it is
+#  *** harmless. The FILLED version contains every class password — treat it
+#  *** exactly like the credential slips and never put it anywhere shared.
+#
+#  Build the filled copy on Hive:   bash fill-in-raw-data.sh
+# =============================================================================
+
+$ErrorActionPreference = 'Stop'
+$HiveHost = 'hive.hpc.ucdavis.edu'
+$DataDir  = '/quobyte/proteomics-grp/2026_shortcourse_data/2026_data'
+$PscpUrl  = 'https://the.earth.li/~sgtatham/putty/latest/w64/pscp.exe'
+$here     = Split-Path -Parent $MyInvocation.MyCommand.Path
+
+# Hive's real host-key fingerprints, pinned. pscp refuses -hostkey "*", and
+# pinning the actual keys is better anyway - it proves we reached Hive.
+$HostKeys = @(
+  'SHA256:b5nv86Ciaqg1yrUVai6bZ0Hk4IpzAFLWtIPDBdacbQM',
+  'SHA256:AmJ+z2miIMXlSAcm7k8YwKlIWk5+VqxyT0R4q3fvpcA'
+)
+
+$Roster = @(
+__ROSTER__
+)
+
+# The initials as they actually appear in the 2026 filenames. Taken from the
+# data itself rather than guessed from names, because they are not uniform -
+# some people have three (AGR-B), one has none (JEJ), and Gina de Boer is GdB-R.
+$Initials = @(
+  'AB-G','AC-G','AG-B','AG-Y','AGR-B','BG-G','DG-Y','DY-R','GV-R','GdB-R',
+  'HA-R','JD-B','JEJ','JG-R','JMD-Y','JN-B','JP-R','JTL-B','JY-B','KS-R',
+  'L-Y','ML-Y','MT-G','NC-Y','NK-R','NM-B','NT-G','RM-R','SG-Y','TMB-Y',
+  'VV-Y','YL-R','ZY-G'
+)
+
+function Say($t, $c = 'Gray') { Write-Host $t -ForegroundColor $c }
+function Bail($msg) { Say ''; Say $msg Red; Say ''; Read-Host 'Press Enter to close'; exit 1 }
+
+Say ''
+Say '=================================================' Cyan
+Say '  Proteomics Short Course 2026 - get your raw data' Cyan
+Say '=================================================' Cyan
+
+# --- 1. who are you ----------------------------------------------------------
+Say ''
+Say 'Find your account number:' White
+for ($i = 0; $i -lt $Roster.Count; $i++) {
+  Say ("   {0,2}. {1}" -f ($i + 1), $Roster[$i].User)
+}
+Say ''
+$pick = Read-Host '  Type your number and press Enter'
+$n = 0
+if (-not [int]::TryParse($pick.Trim(), [ref]$n) -or $n -lt 1 -or $n -gt $Roster.Count) {
+  Bail ("  That was not a number between 1 and {0}. Run it again." -f $Roster.Count)
+}
+$Me = $Roster[$n - 1]
+
+# --- 2. which runs are yours -------------------------------------------------
+Say ''
+Say ("  You are {0}." -f $Me.User) Green
+Say ''
+Say 'Now find your initials, exactly as they appear in your filenames:' White
+for ($i = 0; $i -lt $Initials.Count; $i++) {
+  Write-Host ("   {0,2}. {1,-6}" -f ($i + 1), $Initials[$i]) -NoNewline
+  if ((($i + 1) % 5) -eq 0) { Write-Host '' }
+}
+Write-Host ''
+Say ''
+Say '  (Not sure? Ask Claude "list my runs" - it will tell you.)' DarkGray
+$pick2 = Read-Host '  Type the number next to your initials'
+$m = 0
+if (-not [int]::TryParse($pick2.Trim(), [ref]$m) -or $m -lt 1 -or $m -gt $Initials.Count) {
+  Bail ("  That was not a number between 1 and {0}. Run it again." -f $Initials.Count)
+}
+$ini = $Initials[$m - 1]
+
+# --- 3. pscp -----------------------------------------------------------------
+# Windows' built-in scp cannot take a password on the command line. pscp can,
+# which is the whole reason this version needs no typing.
+$pscp = Join-Path $here 'pscp.exe'
+if (-not (Test-Path $pscp)) {
+  Say ''
+  Say '  First run - fetching a small file-transfer helper (once only)...' DarkGray
+  try {
+    Invoke-WebRequest -Uri $PscpUrl -OutFile $pscp -UseBasicParsing
+  } catch {
+    Bail "  Could not download pscp.exe. Get it from $PscpUrl and save it next to this script."
+  }
+}
+
+$dest = Join-Path $env:USERPROFILE "Desktop\proteomics-raw-data\$ini"
+New-Item -ItemType Directory -Force -Path $dest | Out-Null
+
+Say ''
+Say ("  Downloading the {0} runs into:" -f $ini) White
+Say "    $dest" White
+Say ''
+Say '  These are raw instrument folders - about 2 GB each, so roughly 8 GB in' Yellow
+Say '  total. It will take a while. Leave the window open.' Yellow
+Say ''
+$go = Read-Host '  Start the download? (y/n)'
+if ($go -notmatch '^[Yy]') { Say '  Cancelled - nothing downloaded.' Yellow; Read-Host 'Press Enter to close'; exit }
+
+$hk = @(); foreach ($k in $HostKeys) { $hk += '-hostkey'; $hk += $k }
+
+# -r because each .d is a folder. pscp only supports ONE wildcard level, and
+# this pattern stays inside a single directory, so it is within that limit.
+& $pscp -batch -r -pw $Me.Pass @hk "$($Me.User)@${HiveHost}:$DataDir/*_${ini}_*" $dest
+
+if ($LASTEXITCODE -eq 0) {
+  $got = (Get-ChildItem $dest -Directory -Filter '*.d' -ErrorAction SilentlyContinue).Count
+  Say ''
+  Say "  Done - $got runs are in $dest" Green
+  Start-Process explorer.exe $dest
+} else {
+  Say ''
+  Say '  That did not finish cleanly.' Red
+  Say '  Run it again - it will pick up what is missing.' DarkGray
+}
+
+Say ''
+Read-Host 'Press Enter to close'

@@ -11,6 +11,7 @@ final_handouts.zip
 Student Setup/student-slips/
 Student Setup/student-slips.pdf
 Get-My-Results.ps1
+Get-My-Raw-Data-EASY.ps1
 student-slips.pdf
 
 # The course API key. The committed copy is only the placeholder
