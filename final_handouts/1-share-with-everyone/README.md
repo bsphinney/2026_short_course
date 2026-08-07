@@ -29,6 +29,18 @@ Then ask for what you want in plain English — and always say **"the species is
 > To download from this page: click the file, then use the **download button** (⤓, top right of
 > the file view). Don't use *File → Save As* in your browser — that saves the web page, not the file.
 
+**Quicker: let PowerShell fetch both for you.** Open PowerShell and paste this — it puts both
+raw-data files on your Desktop, correctly named and together:
+
+```powershell
+cd $HOME\Desktop
+curl.exe -L -o "Get-My-Raw-Data.ps1" https://raw.githubusercontent.com/bsphinney/2026_short_course/main/final_handouts/1-share-with-everyone/Get-My-Raw-Data.ps1
+curl.exe -L -o "Get My Raw Data.cmd" https://raw.githubusercontent.com/bsphinney/2026_short_course/main/final_handouts/1-share-with-everyone/Get%20My%20Raw%20Data.cmd
+```
+
+Then double-click **Get My Raw Data.cmd** on your Desktop. If it says *"Cannot find
+Get-My-Raw-Data.ps1"*, only one of the two arrived — run the lines above again.
+
 ### Your results — small, do this one
 
 | File | |
