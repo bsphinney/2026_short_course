@@ -60,9 +60,14 @@ Say "Looking on Hive for runs matching  $pattern"
 Say 'You will be asked for your Hive password. Nothing appears as you type.' DarkGray
 Say ''
 
-# -L makes du follow the symlinks, which is what scp will do too - without it
-# the sizes come back as a few hundred bytes and are meaningless.
-$remoteCmd = "cd '$DataDir' && ls -d $pattern 2>/dev/null | grep '_DIA_' | wc -l && du -shLc \$(ls -d $pattern 2>/dev/null | grep '_DIA_') 2>/dev/null | tail -1 | cut -f1"
+# Two things to be careful about in this one line:
+#  * -L makes du follow the symlinks, which is what scp will do too. Without it
+#    the sizes come back as a few hundred bytes and mean nothing.
+#  * No $( ) anywhere. PowerShell evaluates $( ) inside a double-quoted string
+#    even when the string is destined for a remote shell, so a command
+#    substitution here runs locally and fails on Windows. The matching runs are
+#    written to a list file on Hive and fed to du with xargs instead.
+$remoteCmd = "cd '$DataDir' && ls -d $pattern 2>/dev/null | grep '_DIA_' > ~/.rawlist; wc -l < ~/.rawlist; xargs -a ~/.rawlist du -shLc 2>/dev/null | tail -1 | cut -f1"
 $info = & ssh -o StrictHostKeyChecking=accept-new "$user@$HiveHost" $remoteCmd 2>&1
 
 $lines = @($info | Where-Object { $_ -match '\S' })
