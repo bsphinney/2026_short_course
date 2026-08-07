@@ -1,22 +1,53 @@
-Proteomics Short Course 2026 — student files
+Proteomics Short Course 2026 - student files
 ============================================
 
-In this folder:
+START HERE
+----------
+  HANDOUT-hive-start-here.html   The whole course. Open it in a browser.
+  HANDOUT-hive-start-here.md     Same document, for reading on GitHub.
 
-  HANDOUT-hive-start-here.html   Start here. Open it in a browser.
-  Get My Results.cmd             Downloads your results to your own computer.
+It comes down to two commands:
 
-MISSING A FILE?
----------------
-Get My Results.cmd needs a partner file called Get-My-Results.ps1, and that one
-is NOT in this folder on purpose.
+    ssh proteomics-class-NN@hive.hpc.ucdavis.edu     (NN is your own number)
+    claude-course
 
-It contains the class account passwords, and everyone on the course can read
-this shared folder — so it is handed out privately instead, the same way you
-received your own password.
+Then ask for what you want in plain English - and always say
+"the species is mouse".
 
-Ask your instructor for Get-My-Results.ps1. Save it in the SAME folder as
-Get My Results.cmd, then double-click the .cmd file.
 
-(The copy in superseded/ is an older version that asks you to type your password
-every time. Do not use it.)
+GETTING YOUR RESULTS BACK
+-------------------------
+  Get My Results.cmd     <- double-click this one
+  Get-My-Results.ps1     <- ASK YOUR INSTRUCTOR, it is not published
+
+Both files must sit in the SAME folder. Double-click the .cmd, never the
+.ps1 - Windows blocks downloaded .ps1 files, which is what the .cmd is for.
+
+Get-My-Results.ps1 contains every class password, so it is handed out
+privately instead of being put anywhere the class can read. If you cannot
+find it here, that is on purpose.
+
+
+GETTING THE RAW DATA (only if you really need it)
+-------------------------------------------------
+  Get My Raw Data.cmd    <- double-click this one
+  Get-My-Raw-Data.ps1    <- keep it in the same folder
+
+Asks for your username and initials, shows you how many runs matched and
+how big they are, and waits for you to say yes.
+
+  *** These are BIG. One run is about 2.2 GB. Your own four runs are
+      about 8 GB. A whole bench group is 60-90 GB. The full dataset is
+      235 GB. On classroom wi-fi, with everyone copying at once, this is
+      slow for everybody.
+
+      You do NOT need the raw files to do the course - Claude searches
+      them where they already are on Hive, which is much faster. Copy
+      them only to open a run in Bruker software on your own PC, and
+      take your own runs rather than a whole bench. ***
+
+
+STUCK?
+------
+The last section of the handout lists what usually goes wrong. After that,
+ask Claude - explaining errors is one of the things it is best at.
