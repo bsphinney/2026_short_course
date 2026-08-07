@@ -30,11 +30,20 @@ find it here, that is on purpose.
 
 GETTING THE RAW DATA (only if you really need it)
 -------------------------------------------------
-  Get My Raw Data.cmd    <- double-click this one
-  Get-My-Raw-Data.ps1    <- keep it in the same folder
+Ask your instructor for the easy version:
 
-Asks for your username and initials, shows you how many runs matched and
-how big they are, and waits for you to say yes.
+  Get My Raw Data EASY.cmd    <- double-click this one
+  Get-My-Raw-Data-EASY.ps1    <- ASK YOUR INSTRUCTOR, it is not published
+
+Pick your name from a list, pick your initials from a list, done. No password
+to type. The .ps1 holds the class passwords, which is why it is handed out
+directly rather than put on GitHub.
+
+If you would rather not wait, these two ARE on GitHub and work straight away -
+you just type your own Hive password:
+
+  Get My Raw Data.cmd
+  Get-My-Raw-Data.ps1
 
   *** These are BIG. One run is about 2.2 GB. Your own four runs are
       about 8 GB. A whole bench group is 60-90 GB. The full dataset is

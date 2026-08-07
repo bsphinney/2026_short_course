@@ -53,13 +53,46 @@ If you can't find it here, that's deliberate.
 
 ### Your raw data — large, only if you need it
 
+**Ask your instructor for the easy version.** It is two files:
+
+| File | |
+|---|---|
+| `Get My Raw Data EASY.cmd` | double-click this |
+| `Get-My-Raw-Data-EASY.ps1` | **ask your instructor** — it isn't on GitHub |
+
+Pick your name from a list, pick your initials from a list, and it downloads. No
+password to type. Like the results tool, the `.ps1` half holds the class passwords, so
+it is handed out directly rather than published.
+
+<details>
+<summary>Or do it yourself without waiting for that file</summary>
+
+These two are on GitHub and work straight away — you just type your own Hive password:
+
 | File | |
 |---|---|
 | `Get My Raw Data.cmd` | double-click this |
 | `Get-My-Raw-Data.ps1` | download this too, into the same folder |
 
-It asks for your Hive username and your initials, tells you how many runs matched and how big
-they are, and waits for you to say yes before downloading anything.
+Paste this into PowerShell to fetch both onto your Desktop, correctly named:
+
+```powershell
+cd $HOME\Desktop
+curl.exe -L -o "Get-My-Raw-Data.ps1" https://raw.githubusercontent.com/bsphinney/2026_short_course/main/final_handouts/1-share-with-everyone/Get-My-Raw-Data.ps1
+curl.exe -L -o "Get My Raw Data.cmd" https://raw.githubusercontent.com/bsphinney/2026_short_course/main/final_handouts/1-share-with-everyone/Get%20My%20Raw%20Data.cmd
+```
+
+If it says *"Cannot find Get-My-Raw-Data.ps1"*, only one of the two arrived — run it again.
+
+Or skip the scripts entirely and use `scp`, replacing `NN` with your number and `XX-Y`
+with your initials:
+
+```powershell
+cd $HOME\Desktop
+scp -r "proteomics-class-NN@hive.hpc.ucdavis.edu:/quobyte/proteomics-grp/2026_shortcourse_data/2026_data/*_XX-Y_*" .
+```
+
+</details>
 
 > [!WARNING]
 > **Raw runs are big.** One run is about **2.2 GB**. Your own four are about **8 GB**. A whole
