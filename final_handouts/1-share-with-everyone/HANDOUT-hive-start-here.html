@@ -439,7 +439,52 @@ scancel 19527064</pre>
     </div>
   </div>
 
-  <h2><span class="num">10</span> Get your results onto your own computer</h2>
+  <h2><span class="num">10</span> Things worth asking</h2>
+  <div class="step">
+    <p>Once your first search works, these are the questions this dataset can genuinely answer.
+      Paste any of them into Claude Code.</p>
+
+    <h3>Find your feet</h3>
+    <pre>List my runs. My initials are <span class="you">XX-Y</span>. Which prep methods do I have?</pre>
+    <pre>Show me what's inside one .d folder and explain what each file is.</pre>
+
+    <h3>DDA versus DIA — a free experiment</h3>
+    <p>Two runs in this dataset were acquired in <strong>DDA</strong> mode, and the same samples were
+      also run in <strong>DIA</strong>. Comparing acquisition modes on identical material is a rare
+      thing to have:</p>
+    <pre>In ~/course/2026_data there are two DDA runs from NM-B and matching
+DIA runs of the same samples. Search both with the right settings for
+each, and tell me how DDA and DIA differ in proteins found, peptides
+per protein, and missing values. The species is mouse.</pre>
+
+    <h3>See the wrong-species failure for yourself</h3>
+    <pre>Search one of my runs as human instead of mouse, then as mouse, and
+show me the two protein counts side by side. Explain what happened.</pre>
+    <p>This is the single most common way a proteomics result goes quietly wrong. It is worth
+      seeing once, deliberately, so you recognise it later.</p>
+
+    <h3>Quality control</h3>
+    <pre>Search a blank injection from ~/course/2026_data and tell me what's in
+it. What does that say about carryover between runs?</pre>
+    <pre>Compare contaminant levels — keratin, trypsin — across the four prep
+methods. Which prep is cleanest?</pre>
+    <pre>Using all the bead runs, which proteins are most variable across the
+class? Is that biology or handling?</pre>
+
+    <h3>Make sense of the answer</h3>
+    <pre>Write the methods section for this experiment, ready for a paper.</pre>
+    <pre>My search returned 1,800 protein groups. Walk me through what could be
+wrong, most likely first.</pre>
+
+    <div class="callout warn">
+      <strong>Two habits that save you.</strong> Say <strong>"the species is mouse"</strong> every
+      single time — it cannot be read from the file. And when you point at a set of runs, ask for
+      <code class="inline">*_DIA_*.d</code> rather than <code class="inline">*.d</code>, so the two
+      DDA runs and the blanks don't get swept into a DIA search.
+    </div>
+  </div>
+
+  <h2><span class="num">11</span> Get your results onto your own computer</h2>
   <div class="step">
     <p>Your results live on Hive. Copy them to your own laptop so you can read them properly — and so you
       still have them after the course ends.</p>
@@ -534,7 +579,7 @@ scp "proteomics-class-<span class="you">NN</span>@hive.hpc.ucdavis.edu:sessions/
     </div>
   </div>
 
-  <h2><span class="num">11</span> If something goes wrong</h2>
+  <h2><span class="num">12</span> If something goes wrong</h2>
   <div class="step">
     <div class="tablewrap">
     <table>

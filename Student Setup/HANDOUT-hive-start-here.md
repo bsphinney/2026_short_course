@@ -332,7 +332,56 @@ Your main results file is `report.parquet`. The one most people actually want is
 > **Sanity-check your own numbers.** If a mouse sample gives you a few hundred proteins instead of a few thousand, something went wrong — often the wrong species. Ask Claude Code to look at the log and QC summary with you. Getting a number is easy; knowing whether to believe it is the real skill this course is teaching.
 >
 
-## 10. Get your results onto your own computer
+## 10. Things worth asking
+
+Once your first search works, these are the questions this dataset can genuinely answer. Paste any of them into Claude Code.
+
+### Find your feet
+
+    List my runs. My initials are XX-Y. Which prep methods do I have?
+
+    Show me what's inside one .d folder and explain what each file is.
+
+### DDA versus DIA — a free experiment
+
+Two runs in this dataset were acquired in **DDA** mode, and the same samples were also run in **DIA**. Comparing acquisition modes on identical material is a rare thing to have:
+
+    In ~/course/2026_data there are two DDA runs from NM-B and matching
+    DIA runs of the same samples. Search both with the right settings for
+    each, and tell me how DDA and DIA differ in proteins found, peptides
+    per protein, and missing values. The species is mouse.
+
+### See the wrong-species failure for yourself
+
+    Search one of my runs as human instead of mouse, then as mouse, and
+    show me the two protein counts side by side. Explain what happened.
+
+This is the single most common way a proteomics result goes quietly wrong. It is worth seeing once, deliberately, so you recognise it later.
+
+### Quality control
+
+    Search a blank injection from ~/course/2026_data and tell me what's in
+    it. What does that say about carryover between runs?
+
+    Compare contaminant levels — keratin, trypsin — across the four prep
+    methods. Which prep is cleanest?
+
+    Using all the bead runs, which proteins are most variable across the
+    class? Is that biology or handling?
+
+### Make sense of the answer
+
+    Write the methods section for this experiment, ready for a paper.
+
+    My search returned 1,800 protein groups. Walk me through what could be
+    wrong, most likely first.
+
+> [!WARNING]
+>
+> **Two habits that save you.** Say **"the species is mouse"** every single time — it cannot be read from the file. And when you point at a set of runs, ask for `*_DIA_*.d` rather than `*.d`, so the two DDA runs and the blanks don't get swept into a DIA search.
+>
+
+## 11. Get your results onto your own computer
 
 Your results live on Hive. Copy them to your own laptop so you can read them properly — and so you still have them after the course ends.
 
@@ -403,7 +452,7 @@ It asks for your Hive password — the same one you log in with, and again nothi
 > **Do this before the course ends.** These accounts are temporary and get switched off afterwards. Anything you have not copied to your own computer goes away with them.
 >
 
-## 11. If something goes wrong
+## 12. If something goes wrong
 
 | You see                                   | What it means / what to do                                                                                                                                       |
 |-------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------|
