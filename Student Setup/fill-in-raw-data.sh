@@ -22,8 +22,12 @@ awk '{
   printf "  @{ User='"'"'%s'"'"'; Pass='"'"'%s'"'"' },\n", $1, p
 }' "$CREDS" | sed '$ s/,$//' > /tmp/.rawroster.$$
 
+# Match the placeholder ONLY when it is alone on its line. A loose /__ROSTER__/
+# also matches any comment that mentions it, and the roster then lands in the
+# comment block while the real array is left empty - which is exactly what
+# happened the first time.
 awk -v rf=/tmp/.rawroster.$$ '
-  /__ROSTER__/ { while ((getline line < rf) > 0) print line; next }
+  /^__ROSTER__[[:space:]]*$/ { while ((getline line < rf) > 0) print line; next }
   { print }
 ' "$TMPL" > "$OUT"
 
