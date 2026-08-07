@@ -468,7 +468,25 @@ It asks for your Hive password — the same one you log in with, and again nothi
 > **Do this before the course ends.** These accounts are temporary and get switched off afterwards. Anything you have not copied to your own computer goes away with them.
 >
 
-## 12. If something goes wrong
+## 12. If you need the raw data itself
+
+You do **not** need the raw files to do the course — Claude searches them where they already sit on Hive, which is far faster than moving them. Copy them only if you want to open them in Bruker software on a Windows PC.
+
+> [!WARNING]
+>
+> **These are big.** One run is about **2.2 GB**. Your own four runs are about **8 GB**. A whole bench group is 60–90 GB, and the full dataset is **235 GB**. On classroom wi-fi, with everyone copying at once, this will be slow for the whole room. Take your own runs, not more.
+>
+
+Ask your instructor for `Get My Raw Data.cmd` and `Get-My-Raw-Data.ps1`, put them in the same folder, and double-click the `.cmd` one. It asks for your username and initials, tells you how many runs matched and how big they are, and only starts once you say yes.
+
+Or do it yourself in a **new** PowerShell window, replacing `NN` and `XX-Y` with your own:
+
+    cd $HOME\Desktop
+    scp -r "proteomics-class-NN@hive.hpc.ucdavis.edu:/quobyte/proteomics-grp/2026_shortcourse_data/2026_data/*_XX-Y_*" .
+
+The `.d` runs are folders, which is why this needs `-r`.
+
+## 13. If something goes wrong
 
 | You see                                   | What it means / what to do                                                                                                                                       |
 |-------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------|

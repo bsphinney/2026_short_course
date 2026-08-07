@@ -600,7 +600,30 @@ scp "proteomics-class-<span class="you">NN</span>@hive.hpc.ucdavis.edu:sessions/
     </div>
   </div>
 
-  <h2><span class="num">12</span> If something goes wrong</h2>
+  <h2><span class="num">12</span> If you need the raw data itself</h2>
+  <div class="step">
+    <p>You do <strong>not</strong> need the raw files to do the course — Claude searches them where
+      they already sit on Hive, which is far faster than moving them. Copy them only if you want to
+      open them in Bruker software on a Windows PC.</p>
+    <div class="callout warn">
+      <strong>These are big.</strong> One run is about <strong>2.2 GB</strong>. Your own four runs are
+      about <strong>8 GB</strong>. A whole bench group is 60–90 GB, and the full dataset is
+      <strong>235 GB</strong>. On classroom wi-fi, with everyone copying at once, this will be slow for
+      the whole room. Take your own runs, not more.
+    </div>
+    <p>Ask your instructor for <code class="inline">Get My Raw Data.cmd</code> and
+      <code class="inline">Get-My-Raw-Data.ps1</code>, put them in the same folder, and double-click the
+      <code class="inline">.cmd</code> one. It asks for your username and initials, tells you how many
+      runs matched and how big they are, and only starts once you say yes.</p>
+    <p>Or do it yourself in a <strong>new</strong> PowerShell window, replacing
+      <code class="inline">NN</code> and <code class="inline">XX-Y</code> with your own:</p>
+    <pre>cd $HOME\Desktop
+scp -r "proteomics-class-<span class="you">NN</span>@hive.hpc.ucdavis.edu:/quobyte/proteomics-grp/2026_shortcourse_data/2026_data/*_<span class="you">XX-Y</span>_*" .</pre>
+    <p>The <code class="inline">.d</code> runs are folders, which is why this needs
+      <code class="inline">-r</code>.</p>
+  </div>
+
+  <h2><span class="num">13</span> If something goes wrong</h2>
   <div class="step">
     <div class="tablewrap">
     <table>
