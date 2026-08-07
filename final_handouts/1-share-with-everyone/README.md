@@ -55,10 +55,12 @@ If you can't find it here, that's deliberate.
 
 **Ask your instructor for the easy version.** It is two files:
 
-| File | |
+| File | Where to get it |
 |---|---|
-| `Get My Raw Data EASY.cmd` | double-click this |
-| `Get-My-Raw-Data-EASY.ps1` | **ask your instructor** — it isn't on GitHub |
+| `Get My Raw Data EASY.cmd` | **download it from this folder** ⬇ |
+| `Get-My-Raw-Data-EASY.ps1` | **ask your instructor** — not on GitHub |
+
+Put the two in the same folder, then double-click the **`.cmd`**.
 
 Pick your name from a list, pick your initials from a list, and it downloads. No
 password to type. Like the results tool, the `.ps1` half holds the class passwords, so
