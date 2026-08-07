@@ -168,8 +168,8 @@ pwd
     <ul>
       <li><strong>Tab completion.</strong> Start typing a name and press <code class="inline">Tab</code> —
         it finishes it for you. This matters enormously here, because our data files have names like
-        <code class="inline">Aug26_2025_100spd_DIA_Beads_B_AKM_S2-B4_1_16471.d</code>. Type
-        <code class="inline">Aug26_2025_100spd_DIA_Be</code> then Tab. Never type a filename in full.</li>
+        <code class="inline">04Aug2026_AB-G_bead_100spd_DIA_S3-E2_1_23351.d</code>. Type
+        <code class="inline">04Aug2026_AB-G_be</code> then Tab. Never type a filename in full.</li>
       <li><strong>Up arrow</strong> brings back your previous command, so you can fix a typo instead of
         retyping the whole line.</li>
       <li><strong><code class="inline">Ctrl C</code></strong> stops whatever is currently running and gives
@@ -284,31 +284,34 @@ pwd
     <p><code class="inline">/exit</code> Claude Code for a moment so you're at the normal
       <code class="inline">$</code> prompt, then look:</p>
     <pre><span class="cmt"># the main course dataset — mouse samples, three preparation methods</span>
-ls /quobyte/proteomics-grp/2026_shortcourse_data/2025_data | head</pre>
+ls /quobyte/proteomics-grp/2026_shortcourse_data/2026_data | head</pre>
     <p>You should see a long list of names ending in <code class="inline">.d</code>. Each
       <code class="inline">.d</code> is <strong>one mass-spec run</strong> — it looks like a file but is
       actually a folder full of instrument data.</p>
     <p>Count them, and see the three preparation methods:</p>
     <pre><span class="cmt"># how many runs are there?</span>
-ls -d /quobyte/proteomics-grp/2026_shortcourse_data/2025_data/*.d | wc -l
-<span class="out">96</span>
+ls -d /quobyte/proteomics-grp/2026_shortcourse_data/2026_data/*.d | wc -l
+<span class="out">136</span>
 
 <span class="cmt"># just the bead-prep runs</span>
-ls -d /quobyte/proteomics-grp/2026_shortcourse_data/2025_data/*Beads*.d | wc -l
-<span class="out">31</span></pre>
+ls -d /quobyte/proteomics-grp/2026_shortcourse_data/2026_data/*bead*.d | wc -l
+<span class="out">34</span></pre>
     <p>Reading a filename — they all follow the same pattern:</p>
-    <pre>Aug26_2025_100spd_DIA_Beads_B_AKM_S2-B4_1_16471.d
-   │        │     │    │     │  │
-   date     speed │    prep  │  whose sample
-                  method     bench group</pre>
-    <p>The three prep methods are <strong>Beads</strong> (31 runs), <strong>Strap</strong> (30) and
-      <strong>Urea</strong> (30). There are also 5 <strong>HeLa50</strong> quality-control runs.</p>
+    <pre>04Aug2026_AB-G_bead_100spd_DIA_S3-E2_1_23351.d
+    │       │     │     │    │    │      │
+   date   whose  prep  speed  │  well   run ID
+          sample method       acquisition</pre>
+    <p>There are <strong>four</strong> prep methods this year: <strong>bead</strong> (34 runs),
+      <strong>urea</strong> (34), <strong>s-trap</strong> (32) and <strong>UE</strong> (22). The
+      remaining 14 are <strong>blnk</strong> — blank injections. Leave the blanks out of any
+      comparison; they are not samples. There are no HeLa QC runs in this folder — use
+      <code class="inline">hela</code> for that.</p>
 
     <h3>The other folders worth knowing</h3>
     <div class="tablewrap">
     <table>
       <tr><th>What</th><th>Where</th></tr>
-      <tr><td>Main course data (96 runs)</td><td><code>/quobyte/proteomics-grp/2026_shortcourse_data/2025_data</code></td></tr>
+      <tr><td>Main course data (136 runs)</td><td><code>/quobyte/proteomics-grp/2026_shortcourse_data/2026_data</code></td></tr>
       <tr><td>Practice HeLa file (<strong>human</strong>)</td><td><code>/quobyte/proteomics-grp/2026_shortcourse_data/hela</code></td></tr>
       <tr><td>These handouts</td><td><code>/quobyte/proteomics-grp/2026_shortcourse_data/handouts</code></td></tr>
       <tr><td>Worked example analyses</td><td><code>/quobyte/proteomics-grp/2026_shortcourse_data/prep_method_comparison_3x3</code></td></tr>
@@ -328,7 +331,7 @@ ls -d /quobyte/proteomics-grp/2026_shortcourse_data/2025_data/*Beads*.d | wc -l
 proteins were identified. The species is mouse. Put all the
 results in my home directory.
 
-/quobyte/proteomics-grp/2026_shortcourse_data/2025_data/Aug26_2025_100spd_DIA_Beads_B_AKM_S2-B4_1_16471.d</pre>
+/quobyte/proteomics-grp/2026_shortcourse_data/2026_data/04Aug2026_AB-G_bead_100spd_DIA_S3-E2_1_23351.d</pre>
     <p>Claude will work out that this is DIA data from a timsTOF, pick the right validated settings, fetch
       the mouse protein database, write a cluster job, submit it, and watch it until it finishes.</p>
     <p><strong>It will ask you to confirm before it starts.</strong> Read that summary — it tells you what
@@ -337,13 +340,13 @@ results in my home directory.
     <h3>When you're ready for a real comparison</h3>
     <p>The interesting question in this dataset is whether the three preparation methods differ. Try:</p>
     <pre>Compare three bead-prep and three urea-prep runs from
-/quobyte/proteomics-grp/2026_shortcourse_data/2025_data
+/quobyte/proteomics-grp/2026_shortcourse_data/2026_data
 The species is mouse. Which proteins differ between the two methods?</pre>
     <div class="callout warn">
       <strong>Always say which species.</strong> It cannot be worked out from the file, and the wrong
       species doesn't produce an error — it just quietly finds far fewer proteins.
       <ul>
-        <li>Anything in <code class="inline">2025_data</code> (the 96 course runs) is <strong>mouse</strong>.</li>
+        <li>Anything in <code class="inline">2026_data</code> (the 136 course runs) is <strong>mouse</strong>.</li>
         <li>The file in <code class="inline">hela</code> is <strong>human</strong>.</li>
       </ul>
     </div>

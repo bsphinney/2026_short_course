@@ -16,19 +16,24 @@ course folder, so check which data the student is using before you search:**
 
 | Data | Species | Taxid / proteome |
 |---|---|---|
-| `2025_data/` — the 96 course runs | **mouse** | 10090 · UP000000589 |
+| **`2026_data/` — the 136 runs for THIS year's class** | **mouse** | 10090 · UP000000589 |
+| `2025_data/` — last year's 96 runs, kept for reference | **mouse** | 10090 · UP000000589 |
 | `hela/` — the HeLa QC file | **human** | 9606 · UP000005640 |
 
-Default to **mouse** for anything in `2025_data`, which is nearly all real work. Use
-human only for the HeLa practice file. If a search comes back with only a few hundred
-protein groups, suspect the species before anything else.
+Default to **mouse** for anything in `2026_data` or `2025_data`, which is nearly all real
+work. Use human only for the HeLa practice file. If a search comes back with only a few
+hundred protein groups, suspect the species before anything else.
+
+**Use `2026_data` unless the student explicitly asks for last year's.** When someone says
+"my data", "the course data" or "the short course data", they mean `~/course/2026_data`.
+`2025_data` is the previous cohort's and is kept only for comparison.
 
 ## Where things are
 
 | What | Path |
 |---|---|
-| **Course data — 96 runs** | `~/course/2025_data` |
-| ↳ (that is a symlink to) | `/quobyte/proteomics-grp/brett/short_course_data/2025/2025_ShortCourse` |
+| **Course data — this year, 136 runs** | `~/course/2026_data` |
+| Last year's data — 96 runs, reference only | `~/course/2025_data` |
 | Practice HeLa QC file (**human**) | `~/course/hela` |
 | More HeLa QC runs if needed | `/quobyte/proteomics-grp/hela_qcs/timstofHT/dia` |
 | Worked example analyses | `~/course/prep_method_comparison_3x3` |
@@ -40,10 +45,32 @@ easier to read and tab-completes.
 | Handouts | `~/course/handouts` |
 | **The student's own work** | their home directory (`~`) — always |
 
-The course data is **96 `.d` files** on a Bruker timsTOF HT, dia-PASEF, 100 samples-per-day
-(~14 min gradient): **31 Beads**, **30 Strap**, **30 Urea**, and 5 HeLa50 QC runs.
-Filenames read `<date>_100spd_DIA_<prep>_<benchgroup>_<initials>_<well>_<runID>.d`, so the
-prep method is the 5th underscore-separated field — that is how you group samples.
+`2026_data` is **136 `.d` files** on a Bruker timsTOF HT, dia-PASEF, 100 samples-per-day
+(~14 min gradient), acquired 04–05 Aug 2026. Four prep methods plus blanks:
+
+| Prep | Runs |
+|---|---|
+| `bead` | 34 |
+| `urea` | 34 |
+| `s-trap` | 32 |
+| `UE` | 22 |
+| `blnk` — blank injections, **exclude from any comparison** | 14 |
+
+**Group samples by matching the prep keyword anywhere in the filename** —
+`bead`, `urea`, `s-trap`, `UE` — and *not* by splitting on `_` and taking a fixed field.
+The 2026 names do not all share one layout, so a positional rule silently mis-groups them.
+Most read `<date>_<initials>_<prep>_100spd_DIA_<well>_<runID>.d`, but the field count
+varies. Note `s-trap` is hyphenated this year (it was `Strap` in 2025) and `blnk` marks a
+blank, not a sample.
+
+Every name is free of spaces and odd characters, so globs are safe. (Four runs did carry
+a stray space after the date; they were renamed on 2026-08-07 — if a student has an older
+note referring to `04Aug2026_ JG-R_...`, the space is simply gone now.)
+
+Last year's `2025_data` is 96 files with a different scheme —
+`<date>_100spd_DIA_<prep>_<benchgroup>_<initials>_<well>_<runID>.d`, prep as the 5th
+field, groups `Beads`/`Strap`/`Urea` plus 5 HeLa50 QC runs. `2026_data` has no QC runs;
+use `~/course/hela` if you need one.
 
 **Read from the shared folders; never write into them.** The student's account is in the
 owning group, so the filesystem will permit writes, but these are the only copies and are
@@ -59,17 +86,17 @@ the search is not an error; it silently changes what can be identified.
 
 | Need | Use |
 |---|---|
-| mouse FASTA (default) | `~/course/2025_data/UCD_Sample_prep_mouse.empirical.fasta` |
+| mouse FASTA (default) | `~/course/2026_data/UCD_Sample_prep_mouse.empirical.fasta` |
 | human FASTA | `~/course/speclibs/human_UP000005640_contam.fasta` |
-| **mouse library (default — canonical one-per-gene, 22,234 seqs)** | `~/course/2025_data/UCD_Sample_prep_mouse.empirical.parquet` |
+| **mouse library (default — canonical one-per-gene, 22,234 seqs)** | `~/course/2026_data/UCD_Sample_prep_mouse.empirical.parquet` |
 | mouse library, `full` set (55,253 seqs — only if you need TrEMBL) | `~/course/speclibs/mouse_UP000000589_contam_diaPASEF.predicted.speclib` |
 | human library (m/z 300-1800, charge 1-4) | `~/course/speclibs/human_UP000005640_contam.predicted.speclib` |
 
 **For the mouse course data, use the library that sits right beside it:**
 
 ```
---lib   ~/course/2025_data/UCD_Sample_prep_mouse.empirical.parquet
---fasta ~/course/2025_data/UCD_Sample_prep_mouse.empirical.fasta
+--lib   ~/course/2026_data/UCD_Sample_prep_mouse.empirical.parquet
+--fasta ~/course/2026_data/UCD_Sample_prep_mouse.empirical.fasta
 ```
 
 and drop `--fasta-search`. That skips ~5 minutes of library prediction per run.
@@ -231,7 +258,7 @@ For just the report rather than everything:
 | What | Reference |
 |---|---|
 | `hela/` HeLa file, **library-free**, human | **4,466 protein groups**, 35,952 precursors, ~6 min on 32 CPUs |
-| `2025_data/` mouse run, **using `UCD_Sample_prep_mouse.empirical`** | ~**4,000-4,900** protein groups per run, ~1-2 min |
+| a mouse course run, **using `UCD_Sample_prep_mouse.empirical`** | ~**4,000-4,900** protein groups per run, ~1-2 min |
 
 Both measured on these accounts. A library-based run and a library-free run are *not*
 directly comparable — the library bounds what can be found. If a student's number differs

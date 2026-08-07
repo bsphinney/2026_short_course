@@ -63,7 +63,7 @@ Check where you are:
 
     # pwd = "print working directory" — shows where you currently are
     pwd
-    /home/proteomics-class-NN        <- printed by the computer (with your own number)
+    /home/proteomics-class-NN        <- printed by the computer, not typed by you   (with your own number)
 
 That's your own private folder on Hive, called your **home directory**. Everything you make goes here. Nobody else can see it.
 
@@ -90,7 +90,7 @@ You genuinely don't need more than these. Try each one now.
 
 ### Three habits that will save you the most typing
 
--   **Tab completion.** Start typing a name and press `Tab` — it finishes it for you. This matters enormously here, because our data files have names like `Aug26_2025_100spd_DIA_Beads_B_AKM_S2-B4_1_16471.d`. Type `Aug26_2025_100spd_DIA_Be` then Tab. Never type a filename in full.
+-   **Tab completion.** Start typing a name and press `Tab` — it finishes it for you. This matters enormously here, because our data files have names like `04Aug2026_AB-G_bead_100spd_DIA_S3-E2_1_23351.d`. Type `04Aug2026_AB-G_be` then Tab. Never type a filename in full.
 -   **Up arrow** brings back your previous command, so you can fix a typo instead of retyping the whole line.
 -   **`Ctrl C`** stops whatever is currently running and gives you your prompt back. It is safe — you'll use it later to stop *watching* a job without stopping the job itself.
 
@@ -193,34 +193,34 @@ The data lives in our group storage, shared by the whole class.
 `/exit` Claude Code for a moment so you're at the normal `$` prompt, then look:
 
     # the main course dataset — mouse samples, three preparation methods
-    ls /quobyte/proteomics-grp/2026_shortcourse_data/2025_data | head
+    ls /quobyte/proteomics-grp/2026_shortcourse_data/2026_data | head
 
 You should see a long list of names ending in `.d`. Each `.d` is **one mass-spec run** — it looks like a file but is actually a folder full of instrument data.
 
 Count them, and see the three preparation methods:
 
     # how many runs are there?
-    ls -d /quobyte/proteomics-grp/2026_shortcourse_data/2025_data/*.d | wc -l
-    96        <- printed by the computer, not typed by you
+    ls -d /quobyte/proteomics-grp/2026_shortcourse_data/2026_data/*.d | wc -l
+    136        <- printed by the computer, not typed by you
 
     # just the bead-prep runs
-    ls -d /quobyte/proteomics-grp/2026_shortcourse_data/2025_data/*Beads*.d | wc -l
-    31        <- printed by the computer, not typed by you
+    ls -d /quobyte/proteomics-grp/2026_shortcourse_data/2026_data/*bead*.d | wc -l
+    34        <- printed by the computer, not typed by you
 
 Reading a filename — they all follow the same pattern:
 
-    Aug26_2025_100spd_DIA_Beads_B_AKM_S2-B4_1_16471.d
-       │        │     │    │     │  │
-       date     speed │    prep  │  whose sample
-                      method     bench group
+    04Aug2026_AB-G_bead_100spd_DIA_S3-E2_1_23351.d
+        │       │     │     │    │    │      │
+       date   whose  prep  speed  │  well   run ID
+              sample method       acquisition
 
-The three prep methods are **Beads** (31 runs), **Strap** (30) and **Urea** (30). There are also 5 **HeLa50** quality-control runs.
+There are **four** prep methods this year: **bead** (34 runs), **urea** (34), **s-trap** (32) and **UE** (22). The remaining 14 are **blnk** — blank injections. Leave the blanks out of any comparison; they are not samples. There are no HeLa QC runs in this folder — use `hela` for that.
 
 ### The other folders worth knowing
 
 | What                           | Where                                                                      |
 |--------------------------------|----------------------------------------------------------------------------|
-| Main course data (96 runs)     | `/quobyte/proteomics-grp/2026_shortcourse_data/2025_data`                  |
+| Main course data (136 runs)    | `/quobyte/proteomics-grp/2026_shortcourse_data/2026_data`                  |
 | Practice HeLa file (**human**) | `/quobyte/proteomics-grp/2026_shortcourse_data/hela`                       |
 | These handouts                 | `/quobyte/proteomics-grp/2026_shortcourse_data/handouts`                   |
 | Worked example analyses        | `/quobyte/proteomics-grp/2026_shortcourse_data/prep_method_comparison_3x3` |
@@ -238,7 +238,7 @@ Start Claude Code again (`claude-course`) and ask in plain English. You can past
     proteins were identified. The species is mouse. Put all the
     results in my home directory.
 
-    /quobyte/proteomics-grp/2026_shortcourse_data/2025_data/Aug26_2025_100spd_DIA_Beads_B_AKM_S2-B4_1_16471.d
+    /quobyte/proteomics-grp/2026_shortcourse_data/2026_data/04Aug2026_AB-G_bead_100spd_DIA_S3-E2_1_23351.d
 
 Claude will work out that this is DIA data from a timsTOF, pick the right validated settings, fetch the mouse protein database, write a cluster job, submit it, and watch it until it finishes.
 
@@ -249,14 +249,14 @@ Claude will work out that this is DIA data from a timsTOF, pick the right valida
 The interesting question in this dataset is whether the three preparation methods differ. Try:
 
     Compare three bead-prep and three urea-prep runs from
-    /quobyte/proteomics-grp/2026_shortcourse_data/2025_data
+    /quobyte/proteomics-grp/2026_shortcourse_data/2026_data
     The species is mouse. Which proteins differ between the two methods?
 
 > [!WARNING]
 >
 > **Always say which species.** It cannot be worked out from the file, and the wrong species doesn't produce an error — it just quietly finds far fewer proteins.
 >
-> -   Anything in `2025_data` (the 96 course runs) is **mouse**.
+> -   Anything in `2026_data` (the 136 course runs) is **mouse**.
 > -   The file in `hela` is **human**.
 >
 
