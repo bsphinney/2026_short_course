@@ -53,8 +53,19 @@ easier to read and tab-completes.
 | `bead` | 34 |
 | `urea` | 34 |
 | `s-trap` | 32 |
-| `UE` | 22 |
+| `UE` — **urea plus an extra clean-up step** | 22 |
 | `blnk` — blank injections, **exclude from any comparison** | 14 |
+
+`UE` is the same urea prep with an **additional clean-up step**, so `urea` vs `UE`
+isolates the effect of that one change — the most controlled comparison in the dataset,
+and **22 students have a matched pair**, so run it paired.
+
+One caveat to raise if a student runs it: the preps were split across two days —
+`bead` and `urea` on 04Aug2026, `s-trap` and `UE` on 05Aug2026. So a urea/UE difference
+is partly confounded with run day. Pairing by student controls for handling but not for
+day; suggest checking instrument stability across the two days before claiming the
+clean-up step caused a difference. `bead` vs `urea` has no such confound — both ran on
+04Aug.
 
 **Group samples by matching the prep keyword anywhere in the filename** —
 `bead`, `urea`, `s-trap`, `UE` — and *not* by splitting on `_` and taking a fixed field.

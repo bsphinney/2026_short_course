@@ -342,6 +342,22 @@ Once your first search works, these are the questions this dataset can genuinely
 
     Show me what's inside one .d folder and explain what each file is.
 
+### Does the extra clean-up step earn its place?
+
+**UE is the same urea prep with an extra clean-up step added.** So `urea` vs `UE` changes exactly one thing — the cleanest comparison in the whole dataset. Better still, **22 people ran both**, so it can be compared as matched pairs:
+
+    Compare the urea and UE runs in ~/course/2026_data. UE is the same
+    urea prep with an extra clean-up step, and most people ran both, so
+    treat it as a paired comparison. The species is mouse. Use the
+    proteomics skill. Did the clean-up step help?
+
+> [!WARNING]
+>
+> **Before you believe the answer, check the dates.** The urea samples were run on `04Aug2026` and the UE samples on `05Aug2026`. So a difference could come from the clean-up step *or* from the instrument behaving differently on the second day — the two are tangled together. Pairing by person removes differences in handling, but not the day. Ask Claude whether the instrument looks stable across the two days before you conclude the clean-up did it.  
+>
+> This is a real experimental design problem, not a trick question. `bead` vs `urea` has no such issue — both ran on the same day.
+>
+
 ### DDA versus DIA — a free experiment
 
 Two runs in this dataset were acquired in **DDA** mode, and the same samples were also run in **DIA**. Comparing acquisition modes on identical material is a rare thing to have:

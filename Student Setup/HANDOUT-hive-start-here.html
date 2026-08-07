@@ -448,6 +448,27 @@ scancel 19527064</pre>
     <pre>List my runs. My initials are <span class="you">XX-Y</span>. Which prep methods do I have?</pre>
     <pre>Show me what's inside one .d folder and explain what each file is.</pre>
 
+    <h3>Does the extra clean-up step earn its place?</h3>
+    <p><strong>UE is the same urea prep with an extra clean-up step added.</strong> So
+      <code class="inline">urea</code> vs <code class="inline">UE</code> changes exactly one thing —
+      the cleanest comparison in the whole dataset. Better still, <strong>22 people ran both</strong>,
+      so it can be compared as matched pairs:</p>
+    <pre>Compare the urea and UE runs in ~/course/2026_data. UE is the same
+urea prep with an extra clean-up step, and most people ran both, so
+treat it as a paired comparison. The species is mouse. Use the
+proteomics skill. Did the clean-up step help?</pre>
+    <div class="callout warn">
+      <strong>Before you believe the answer, check the dates.</strong> The urea samples were run on
+      <code class="inline">04Aug2026</code> and the UE samples on <code class="inline">05Aug2026</code>.
+      So a difference could come from the clean-up step <em>or</em> from the instrument behaving
+      differently on the second day — the two are tangled together. Pairing by person removes
+      differences in handling, but not the day. Ask Claude whether the instrument looks stable across
+      the two days before you conclude the clean-up did it.
+      <br><br>
+      This is a real experimental design problem, not a trick question. <code class="inline">bead</code>
+      vs <code class="inline">urea</code> has no such issue — both ran on the same day.
+    </div>
+
     <h3>DDA versus DIA — a free experiment</h3>
     <p>Two runs in this dataset were acquired in <strong>DDA</strong> mode, and the same samples were
       also run in <strong>DIA</strong>. Comparing acquisition modes on identical material is a rare
